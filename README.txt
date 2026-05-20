@@ -1,0 +1,3 @@
+Swedish Public Transport brings real-time departure and arrival information from Sweden's national transport network directly into Homey. Add a board for any stop and your home will always know exactly when the next bus, train, tram, metro or ferry is due — without you lifting a finger.
+
+Use flows to get a spoken or push notification before your morning commute, automatically turn on the hallway lights when your train is approaching, receive an alert the moment a departure is cancelled or running behind schedule, and trigger scenes when the delay clears and your connection is back on time. Covers all Swedish public transport operators and works with every stop in the country.

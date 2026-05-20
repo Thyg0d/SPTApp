@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Refresh arrow: thick C-arc (270° CW) made entirely from fills, no stroke -->
+  <!-- Outer arc start = left (12,50), sweeps CW 270° to bottom (50,88).
+       Inner arc traces back CCW 270° from (50,76) to (24,50).
+       Z closes the tail end on the left side. -->
+  <path fill="#000" d="M12 50 A38 38 0 1 1 50 88 L50 76 A26 26 0 1 0 24 50 Z"/>
+  <!-- Arrowhead at arc end (bottom), pointing right = clockwise direction -->
+  <polygon points="44,78 44,98 68,88" fill="#000"/>
+</svg>

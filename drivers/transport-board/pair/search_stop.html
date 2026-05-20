@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find a Stop</title>
+  <!--
+    Try loading /homey.js without data-origin.
+    data-origin="pair" caused a /js/homey.pair.js load error on some firmware.
+    Without data-origin, Homey should still serve a basic bridge that gives us
+    the onHomeyReady callback and Homey global.
+  -->
+  <script src="/homey.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      color: #1a1a1a;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+
+    p.subtitle { color: #666; margin-bottom: 20px; font-size: 13px; }
+
+    .search-row { display: flex; gap: 8px; margin-bottom: 12px; }
+
+    input[type="text"] {
+      flex: 1; padding: 10px 14px; border: 1px solid #ccc;
+      border-radius: 8px; font-size: 14px; outline: none;
+    }
+    input[type="text"]:focus { border-color: #0070c0; }
+
+    button {
+      padding: 10px 18px; background: #0070c0; color: white;
+      border: none; border-radius: 8px; font-size: 14px; cursor: pointer;
+    }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+
+    #status { min-height: 20px; font-size: 13px; color: #666; margin-bottom: 10px; }
+    #status.error { color: #c0392b; }
+
+    #results { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+    .result-item {
+      background: white; border: 1px solid #e0e0e0; border-radius: 10px;
+      padding: 14px 16px; cursor: pointer;
+    }
+    .result-item:hover { border-color: #0070c0; }
+    .result-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+    .result-meta { font-size: 12px; color: #888; display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .transport-badge {
+      padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 500;
+      background: #e8f0fe; color: #1557b0;
+    }
+    .transport-badge.BUS   { background: #e8f5e9; color: #2e7d32; }
+    .transport-badge.TRAIN { background: #fff3e0; color: #e65100; }
+    .transport-badge.TRAM  { background: #fce4ec; color: #c62828; }
+    .transport-badge.METRO { background: #ede7f6; color: #4527a0; }
+    .transport-badge.FERRY { background: #e0f7fa; color: #00695c; }
+
+    /* Debug panel — visible so you can read it and report back */
+    #debug {
+      margin-top: 20px;
+      background: #1a1a2e;
+      color: #00ff88;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      line-height: 1.6;
+    }
+    #debug .label { color: #aaa; font-size: 11px; margin-bottom: 4px; }
+
+    footer { margin-top: 16px; font-size: 11px; color: #bbb; text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>Find a Stop or Station</h2>
+  <p class="subtitle">Enter the name of your stop or station.</p>
+
+  <div class="search-row">
+    <input type="text" id="query" placeholder="e.g. Centralstationen, Slussen" autocomplete="off" />
+    <button id="searchBtn" onclick="doSearch()">Search</button>
+  </div>
+
+  <div id="status"></div>
+  <ul id="results"></ul>
+
+  <!-- Debug panel: read this out to diagnose what the bridge is doing -->
+  <div id="debug">
+    <div class="label">Debug (share this with support):</div>
+    <div id="dbg">Page loaded. Waiting for Homey bridge...</div>
+  </div>
+
+  <footer>Data from Trafiklab.se · CC-BY 4.0</footer>
+
+<script>
+'use strict';
+
+var _Homey = null;
+
+// --- Debug helper — writes to the visible panel on screen ---
+function dbg(msg) {
+  var el = document.getElementById('dbg');
+  if (el) el.innerHTML += '<br>' + msg;
+}
+
+// --- Approach 1: onHomeyReady callback (injected by Homey bridge) ---
+function onHomeyReady(Homey) {
+  _Homey = Homey;
+  dbg('✓ onHomeyReady called — bridge is ready');
+  document.getElementById('query').focus();
+}
+
+// --- Approach 2: fallback — check for global Homey after page loads ---
+document.addEventListener('DOMContentLoaded', function() {
+  dbg('DOMContentLoaded fired');
+
+  // Give onHomeyReady 1.5 s to be called; if not, check for global Homey
+  setTimeout(function() {
+    if (_Homey) {
+      dbg('Bridge already set via onHomeyReady');
+      return;
+    }
+    // Some firmware versions set Homey as a global without calling onHomeyReady
+    if (typeof Homey !== 'undefined') {
+      _Homey = Homey;
+      dbg('✓ Homey found as global (no onHomeyReady)');
+      document.getElementById('query').focus();
+    } else {
+      dbg('✗ Homey bridge not available after 1.5s — button will show error');
+    }
+  }, 1500);
+});
+
+// --- Search ---
+function doSearch() {
+  var query = document.getElementById('query').value.trim();
+  dbg('Search button clicked — query: "' + query + '"');
+
+  if (!query) {
+    setStatus('Please enter a stop name.', true);
+    return;
+  }
+
+  if (!_Homey) {
+    dbg('ERROR: _Homey is null — bridge not loaded');
+    setStatus('Homey bridge not ready. Close and try again.', true);
+    return;
+  }
+
+  document.getElementById('searchBtn').disabled = true;
+  document.getElementById('results').innerHTML = '';
+  setStatus('Searching…');
+
+  dbg('Calling Homey.emit("search_stop", "' + query + '")');
+
+  _Homey.emit('search_stop', query, function(err, stops) {
+    document.getElementById('searchBtn').disabled = false;
+
+    if (err) {
+      dbg('search_stop error: ' + JSON.stringify(err));
+      setStatus('Error: ' + (err.message || String(err)), true);
+      return;
+    }
+
+    dbg('search_stop returned ' + (stops ? stops.length : 0) + ' results');
+
+    if (!stops || stops.length === 0) {
+      setStatus('No stops found. Try a different search term.');
+      return;
+    }
+
+    setStatus(stops.length + ' stop' + (stops.length !== 1 ? 's' : '') + ' found. Tap to select.');
+    renderResults(stops);
+  });
+}
+
+function renderResults(stops) {
+  var list = document.getElementById('results');
+  list.innerHTML = '';
+  stops.forEach(function(stop) {
+    var li = document.createElement('li');
+    li.className = 'result-item';
+
+    var name = document.createElement('div');
+    name.className = 'result-name';
+    name.textContent = stop.name;
+
+    var meta = document.createElement('div');
+    meta.className = 'result-meta';
+
+    (stop.transportTypes || []).forEach(function(t) {
+      var b = document.createElement('span');
+      b.className = 'transport-badge ' + t;
+      b.textContent = {BUS:'Bus',TRAIN:'Train',TRAM:'Tram',METRO:'Metro',FERRY:'Ferry'}[t] || t;
+      meta.appendChild(b);
+    });
+
+    li.appendChild(name);
+    li.appendChild(meta);
+    li.addEventListener('click', function() { selectStop(stop); });
+    list.appendChild(li);
+  });
+}
+
+function selectStop(stop) {
+  if (!_Homey) return;
+  dbg('Selecting stop: ' + stop.name + ' id=' + stop.id);
+  document.querySelectorAll('.result-item').forEach(function(el) { el.style.opacity = '0.5'; });
+  setStatus('Selected: ' + stop.name);
+  _Homey.emit('select_stop', stop, function(err) {
+    if (err) {
+      dbg('select_stop error: ' + JSON.stringify(err));
+      setStatus('Error: ' + (err.message || String(err)), true);
+      document.querySelectorAll('.result-item').forEach(function(el) { el.style.opacity = '1'; });
+      return;
+    }
+    dbg('select_stop OK — calling nextView()');
+    _Homey.nextView();
+  });
+}
+
+function setStatus(msg, isError) {
+  var el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = isError ? 'error' : '';
+}
+</script>
+</body>
+</html>

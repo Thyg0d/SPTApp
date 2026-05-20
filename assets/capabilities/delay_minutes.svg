@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Smaller clock ring offset to upper-left, plus sign lower-right -->
+  <path fill-rule="evenodd" fill="#000" d="
+    M10 42 A30 30 0 1 0 70 42 A30 30 0 1 0 10 42 Z
+    M18 42 A22 22 0 1 0 62 42 A22 22 0 1 0 18 42 Z
+  "/>
+  <!-- Hour hand pointing up -->
+  <rect x="37" y="22" width="6" height="18" rx="3" fill="#000"/>
+  <!-- Minute hand pointing right -->
+  <rect x="40" y="39" width="14" height="6" rx="3" fill="#000"/>
+  <!-- Center pivot -->
+  <circle cx="40" cy="42" r="4" fill="#000"/>
+  <!-- Plus sign: delay = extra time -->
+  <rect x="74" y="64" width="22" height="8" rx="4" fill="#000"/>
+  <rect x="80" y="58" width="8" height="22" rx="4" fill="#000"/>
+</svg>

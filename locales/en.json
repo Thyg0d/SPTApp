@@ -1,0 +1,28 @@
+{
+  "app": {
+    "name": "Trafiklab Departures",
+    "description": "Monitor public transport departures and arrivals using Trafiklab real-time data"
+  },
+  "pair": {
+    "search_stop": {
+      "title": "Find a Stop or Station",
+      "placeholder": "e.g. Centralstationen, Slussen, Odenplan"
+    }
+  },
+  "settings": {
+    "apiKey": "Trafiklab API Key",
+    "debugLogging": "Debug Logging",
+    "saved": "Settings saved",
+    "error": "Error saving settings"
+  },
+  "error": {
+    "missing_key": "Trafiklab API key is not set. Go to App Settings.",
+    "invalid_key": "Invalid API key. Check App Settings.",
+    "rate_limit": "Rate limit exceeded. Reduce polling frequency.",
+    "not_found": "Stop not found. Re-pair this device.",
+    "network": "Network error. Check your internet connection.",
+    "timeout": "Request timed out.",
+    "no_data": "No departures found in the next 60 minutes.",
+    "no_match": "No departures match your filters."
+  }
+}

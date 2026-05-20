@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Signal strength bars — all solid black, fully transparent between bars -->
+  <rect x="10" y="72" width="16" height="18" rx="3" fill="#000"/>
+  <rect x="32" y="54" width="16" height="36" rx="3" fill="#000"/>
+  <rect x="54" y="36" width="16" height="54" rx="3" fill="#000"/>
+  <rect x="76" y="18" width="16" height="72" rx="3" fill="#000"/>
+</svg>

@@ -1,0 +1,12 @@
+{
+  "name": "com.trafiklab.departures",
+  "version": "1.0.0",
+  "description": "Homey app for Trafiklab public transport departures and arrivals",
+  "main": "app.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5"
+  }
+}

@@ -1,0 +1,498 @@
+{
+  "id": "com.thyg0d.swedish-public-transport",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": ["local"],
+  "name": {
+    "en": "Swedish Public Transport",
+    "sv": "Svensk kollektivtrafik"
+  },
+  "description": {
+    "en": "Real-time departures and arrivals for Swedish public transport — bus, train, tram, metro and ferry. Powered by Trafiklab.se.",
+    "sv": "Realtidsavgångar och ankomster för svensk kollektivtrafik — buss, tåg, spårvagn, tunnelbana och färja. Drivs av Trafiklab.se."
+  },
+  "tags": {
+    "en": [
+      "public transport", "bus", "train", "tram", "metro", "ferry",
+      "departures", "arrivals", "trafiklab", "sweden", "transit", "SL",
+      "departure board", "real-time"
+    ]
+  },
+  "category": ["tools"],
+  "permissions": [],
+  "images": {
+    "large": "/assets/images/large.png",
+    "small": "/assets/images/small.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Thyg0d",
+    "email": "swedishpublictransportapp@gmail.com"
+  },
+  "homepage": "https://github.com/Thyg0d/SPTApp",
+  "support": "https://github.com/Thyg0d/SPTApp/issues",
+  "brandColor": "#0070C0",
+
+  "capabilities": {
+    "next_departure_time": {
+      "type": "string",
+      "title": { "en": "Next Departure" },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/next_departure_time.svg"
+    },
+    "departure_line": {
+      "type": "string",
+      "title": { "en": "Line" },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/departure_line.svg"
+    },
+    "departure_destination": {
+      "type": "string",
+      "title": { "en": "Destination" },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/departure_destination.svg"
+    },
+    "delay_minutes": {
+      "type": "number",
+      "title": { "en": "Delay" },
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "units": { "en": "min" },
+      "decimals": 0,
+      "icon": "/assets/capabilities/delay_minutes.svg"
+    },
+    "minutes_until_departure": {
+      "type": "number",
+      "title": { "en": "Departs in" },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor",
+      "units": { "en": "min" },
+      "decimals": 0,
+      "icon": "/assets/capabilities/minutes_until_departure.svg"
+    },
+    "monitoring_enabled": {
+      "type": "boolean",
+      "title": { "en": "Monitoring" },
+      "getable": true,
+      "setable": true,
+      "insights": false,
+      "uiComponent": "toggle",
+      "icon": "/assets/capabilities/monitoring_enabled.svg"
+    },
+    "last_updated": {
+      "type": "string",
+      "title": { "en": "Last Updated" },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/last_updated.svg"
+    },
+    "api_status": {
+      "type": "string",
+      "title": { "en": "Status" },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/api_status.svg"
+    }
+  },
+
+  "drivers": [
+    {
+      "id": "transport-board",
+      "name": {
+        "en": "Transport Board"
+      },
+      "class": "other",
+      "capabilities": [
+        "next_departure_time",
+        "departure_line",
+        "departure_destination",
+        "delay_minutes",
+        "minutes_until_departure",
+        "monitoring_enabled",
+        "last_updated",
+        "api_status"
+      ],
+      "capabilitiesOptions": {
+        "next_departure_time": {
+          "preventInsights": true
+        },
+        "monitoring_enabled": {
+          "preventInsights": true
+        }
+      },
+      "energy": {
+        "approximation": {
+          "usageConstant": 0
+        }
+      },
+      "images": {
+        "large": "/drivers/transport-board/assets/images/large.png",
+        "small": "/drivers/transport-board/assets/images/small.png"
+      },
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": { "next": "add_devices" }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "settings": [
+        {
+          "type": "group",
+          "label": { "en": "Polling" },
+          "children": [
+            {
+              "id": "pollingInterval",
+              "type": "number",
+              "label": { "en": "Polling interval" },
+              "hint": { "en": "How often to fetch new data (1–60 minutes). The Trafiklab server caches data for 60 seconds, so intervals below 1 minute waste API quota." },
+              "value": 5,
+              "min": 1,
+              "max": 60,
+              "units": { "en": "min" }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": { "en": "Board Type" },
+          "children": [
+            {
+              "id": "boardType",
+              "type": "dropdown",
+              "label": { "en": "Show" },
+              "hint": { "en": "Departures: buses/trains leaving this stop. Arrivals: vehicles arriving at this stop." },
+              "value": "departures",
+              "values": [
+                { "id": "departures", "label": { "en": "Departures" } },
+                { "id": "arrivals",   "label": { "en": "Arrivals"   } }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": { "en": "Filters" },
+          "children": [
+            {
+              "id": "transportTypeFilter",
+              "type": "dropdown",
+              "label": { "en": "Transport type" },
+              "hint": { "en": "Filter to a specific transport mode, or show all." },
+              "value": "ALL",
+              "values": [
+                { "id": "ALL",   "label": { "en": "All transport types" } },
+                { "id": "BUS",   "label": { "en": "Bus"                } },
+                { "id": "TRAIN", "label": { "en": "Train"              } },
+                { "id": "TRAM",  "label": { "en": "Tram"               } },
+                { "id": "METRO", "label": { "en": "Metro / Subway"     } },
+                { "id": "FERRY", "label": { "en": "Ferry / Boat"       } }
+              ]
+            },
+            {
+              "id": "lineFilter",
+              "type": "text",
+              "label": { "en": "Line filter (optional)" },
+              "hint": { "en": "Show only departures for this line number or name (e.g. '14', '42X', 'Pendeltåg'). Leave empty for all lines. Case-insensitive partial match." },
+              "value": ""
+            },
+            {
+              "id": "destinationFilter",
+              "type": "text",
+              "label": { "en": "Destination filter (optional)" },
+              "hint": { "en": "Show only departures towards this destination (e.g. 'Centralstationen'). Leave empty for all destinations. Case-insensitive partial match." },
+              "value": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "flow": {
+    "triggers": [
+      {
+        "id": "departure_updated",
+        "title": {
+          "en": "Departure data was updated"
+        },
+        "hint": {
+          "en": "Fires each time fresh departure data has been received from Trafiklab. Use the tokens to check delay, line, destination and time."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          }
+        ],
+        "tokens": [
+          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:32" } },
+          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:27" } },
+          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:32" } },
+          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "14" } },
+          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Centralstationen" } },
+          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Centralstationen" } },
+          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "BUS" } },
+          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "A" } },
+          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 5 },
+          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "+5 min late" } },
+          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": false },
+          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
+          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
+          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Odenplan" } },
+          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "Keolis" } },
+          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Järfälla" } }
+        ]
+      },
+      {
+        "id": "departure_soon",
+        "title": {
+          "en": "A departure is coming up soon"
+        },
+        "titleFormatted": {
+          "en": "A departure is coming up within [[minutes]] minutes"
+        },
+        "hint": {
+          "en": "Fires once when the next departure's countdown first drops to or below your threshold. Set the threshold in the flow card. Resets automatically when that departure is gone and a new one takes its place."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          },
+          {
+            "type": "number",
+            "name": "minutes",
+            "title": { "en": "Within (minutes)" },
+            "min": 1,
+            "max": 120,
+            "placeholder": { "en": "e.g. 10" }
+          }
+        ],
+        "tokens": [
+          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:32" } },
+          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:27" } },
+          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:32" } },
+          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "14" } },
+          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Centralstationen" } },
+          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Centralstationen" } },
+          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "BUS" } },
+          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "A" } },
+          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 0 },
+          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "On time" } },
+          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": false },
+          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
+          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
+          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Odenplan" } },
+          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "Keolis" } },
+          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Järfälla" } }
+        ]
+      },
+      {
+        "id": "departure_cancelled",
+        "title": {
+          "en": "A departure has been cancelled"
+        },
+        "hint": {
+          "en": "Fires once when the next matching departure becomes cancelled. Resets when a new uncancelled departure takes its place."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          }
+        ],
+        "tokens": [
+          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:32" } },
+          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:32" } },
+          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:32" } },
+          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "43" } },
+          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Stockholm C" } },
+          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Stockholm C" } },
+          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "TRAIN" } },
+          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "3" } },
+          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 0 },
+          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "On time" } },
+          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": true },
+          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
+          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
+          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Bålsta" } },
+          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "SJ" } },
+          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Enköping" } }
+        ]
+      },
+      {
+        "id": "departure_on_time",
+        "title": {
+          "en": "A departure is back on time"
+        },
+        "hint": {
+          "en": "Fires when a departure that was previously delayed is no longer delayed. Useful for clearing alerts set by the 'delayed' trigger."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          }
+        ],
+        "tokens": [
+          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:32" } },
+          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:32" } },
+          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:32" } },
+          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "43" } },
+          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Stockholm C" } },
+          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Stockholm C" } },
+          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "TRAIN" } },
+          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "3" } },
+          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 0 },
+          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "On time" } },
+          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": false },
+          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
+          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
+          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Bålsta" } },
+          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "SJ" } },
+          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Enköping" } }
+        ]
+      },
+      {
+        "id": "departure_delayed",
+        "title": {
+          "en": "A departure is delayed"
+        },
+        "titleFormatted": {
+          "en": "A departure is delayed by at least [[min_delay_minutes]] minutes"
+        },
+        "hint": {
+          "en": "Fires when a delay is first detected, or when the delay grows. The minimum delay threshold lets you ignore small delays."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          },
+          {
+            "type": "number",
+            "name": "min_delay_minutes",
+            "title": { "en": "Minimum delay (minutes)" },
+            "min": 1,
+            "max": 60,
+            "placeholder": { "en": "e.g. 1" }
+          }
+        ],
+        "tokens": [
+          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:37" } },
+          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:32" } },
+          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:37" } },
+          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "14" } },
+          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Centralstationen" } },
+          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Centralstationen" } },
+          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "TRAIN" } },
+          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "3" } },
+          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 5 },
+          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "+5 min late" } },
+          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": false },
+          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
+          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
+          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Odenplan" } },
+          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "Keolis" } },
+          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Järfälla" } }
+        ]
+      }
+    ],
+
+    "conditions": [
+      {
+        "id": "is_delayed",
+        "title": {
+          "en": "Next departure !{{is}} delayed"
+        },
+        "hint": {
+          "en": "True when the next departure has a known positive delay."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          }
+        ]
+      },
+      {
+        "id": "is_within_minutes",
+        "title": {
+          "en": "Next departure !{{is}} within {{minutes}} minutes"
+        },
+        "titleFormatted": {
+          "en": "Next departure !{{is}} within [[minutes]] minutes"
+        },
+        "hint": {
+          "en": "True when the countdown to the next departure is at or below the number of minutes you specify."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          },
+          {
+            "type": "number",
+            "name": "minutes",
+            "title": { "en": "Minutes" },
+            "min": 1,
+            "max": 120,
+            "placeholder": { "en": "e.g. 15" }
+          }
+        ]
+      }
+    ],
+
+    "actions": [
+      {
+        "id": "refresh_now",
+        "title": {
+          "en": "Refresh departure data"
+        },
+        "titleFormatted": {
+          "en": "Refresh departure data on !{{device}}"
+        },
+        "hint": {
+          "en": "Immediately fetch fresh data from Trafiklab, outside the normal polling schedule."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          }
+        ]
+      }
+    ]
+  }
+}

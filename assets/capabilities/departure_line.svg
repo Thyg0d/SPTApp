@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Route badge: outer frame minus inner screen via evenodd -->
+  <path fill-rule="evenodd" fill="#000" d="
+    M18 25 L82 25 A10 10 0 0 1 92 35 L92 65 A10 10 0 0 1 82 75 L18 75 A10 10 0 0 1 8 65 L8 35 A10 10 0 0 1 18 25 Z
+    M22 33 L78 33 A6 6 0 0 1 84 39 L84 61 A6 6 0 0 1 78 67 L22 67 A6 6 0 0 1 16 61 L16 39 A6 6 0 0 1 22 33 Z
+  "/>
+  <!-- Two text lines drawn inside the transparent screen area -->
+  <rect x="22" y="39" width="56" height="8" rx="4" fill="#000"/>
+  <rect x="22" y="52" width="36" height="8" rx="4" fill="#000"/>
+</svg>

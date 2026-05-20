@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Map pin: teardrop shape with transparent circular hole via evenodd -->
+  <path fill-rule="evenodd" fill="#000" d="
+    M50 8 C33 8 20 21 20 38 C20 57 50 92 50 92 C50 92 80 57 80 38 C80 21 67 8 50 8 Z
+    M36 39 A14 14 0 1 0 64 39 A14 14 0 1 0 36 39 Z
+  "/>
+</svg>

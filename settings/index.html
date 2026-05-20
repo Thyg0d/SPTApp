@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trafiklab Departures — Settings</title>
+  <script src="/homey.js" data-origin="settings"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      color: #1a1a1a;
+      background: #f5f5f5;
+      padding: 24px 20px;
+      max-width: 600px;
+    }
+
+    h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+    .page-subtitle { color: #666; font-size: 13px; margin-bottom: 24px; line-height: 1.4; }
+
+    .card {
+      background: white; border-radius: 12px; padding: 20px;
+      margin-bottom: 16px; border: 1px solid #e8e8e8;
+    }
+    .card-title { font-weight: 600; font-size: 14px; margin-bottom: 16px; color: #333; }
+    .card-subtitle { font-size: 12px; color: #888; margin-bottom: 14px; line-height: 1.4; }
+
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; color: #444; }
+
+    input[type="text"], input[type="password"], input[type="number"], select {
+      width: 100%; padding: 9px 12px; border: 1px solid #ccc;
+      border-radius: 8px; font-size: 14px; outline: none; background: white;
+      transition: border-color 0.15s;
+    }
+    input:focus, select:focus { border-color: #0070c0; }
+
+    .hint { font-size: 12px; color: #888; margin-top: 5px; line-height: 1.4; }
+
+    .row { display: flex; gap: 8px; align-items: flex-end; }
+    .row input { flex: 1; }
+
+    button.primary {
+      padding: 9px 18px; background: #0070c0; color: white;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 500;
+      cursor: pointer; white-space: nowrap; transition: background 0.15s;
+    }
+    button.primary:hover:not(:disabled) { background: #005a9e; }
+    button.primary:disabled { background: #aaa; cursor: not-allowed; }
+
+    button.secondary {
+      padding: 6px 12px; background: #f0f0f0; color: #333;
+      border: 1px solid #ddd; border-radius: 6px; font-size: 13px;
+      cursor: pointer; transition: background 0.15s;
+    }
+    button.secondary:hover { background: #e4e4e4; }
+
+    button.danger {
+      padding: 5px 10px; background: none; color: #c0392b;
+      border: 1px solid #e0a0a0; border-radius: 6px; font-size: 12px;
+      cursor: pointer;
+    }
+    button.danger:hover { background: #fdecea; }
+
+    /* Status / feedback */
+    .msg { font-size: 13px; margin-top: 8px; min-height: 18px; }
+    .msg.ok  { color: #2e7d32; }
+    .msg.err { color: #c0392b; }
+
+    /* Stop search results */
+    #searchResults { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+
+    .stop-card {
+      border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px 14px;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
+    .stop-info { flex: 1; min-width: 0; }
+    .stop-name { font-weight: 600; font-size: 14px; margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stop-meta { display: flex; flex-wrap: wrap; gap: 5px; }
+
+    .badge {
+      padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 500;
+      background: #e8f0fe; color: #1557b0;
+    }
+    .badge.BUS   { background: #e8f5e9; color: #2e7d32; }
+    .badge.TRAIN { background: #fff3e0; color: #e65100; }
+    .badge.TRAM  { background: #fce4ec; color: #c62828; }
+    .badge.METRO { background: #ede7f6; color: #4527a0; }
+    .badge.FERRY { background: #e0f7fa; color: #00695c; }
+    .badge.saved { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
+    /* Saved stops list */
+    #savedStopsList { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+
+    .saved-stop-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 12px; background: #f9f9f9; border-radius: 8px;
+      border: 1px solid #eee;
+    }
+    .saved-stop-name { font-weight: 500; font-size: 14px; }
+    .saved-stop-id   { font-size: 11px; color: #aaa; font-family: monospace; }
+
+    .no-stops {
+      color: #aaa; font-size: 13px; padding: 12px 0; text-align: center;
+    }
+
+    /* Toggle */
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute; inset: 0; background: #ccc; border-radius: 24px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .toggle input:checked + .toggle-track { background: #0070c0; }
+    .toggle-track::before {
+      content: ''; position: absolute; width: 18px; height: 18px;
+      border-radius: 50%; background: white; top: 3px; left: 3px;
+      transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle input:checked + .toggle-track::before { transform: translateX(20px); }
+
+    /* API key show/hide */
+    .api-key-wrap { position: relative; }
+    .api-key-wrap input { padding-right: 46px; }
+    .show-btn {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: #888; font-size: 12px; cursor: pointer;
+    }
+
+    .save-row { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+    #settingsSaveMsg { font-size: 13px; }
+
+    .attribution { font-size: 11px; color: #bbb; text-align: center; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h2>Trafiklab Departures</h2>
+  <p class="page-subtitle">
+    Configure your API key, then use <strong>Stop Search</strong> to find and save stops.<br>
+    Saved stops will appear when you add a new <strong>Transport Board</strong> device in Homey.
+  </p>
+
+  <!-- ── API Key ────────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Trafiklab API Key</div>
+    <div class="field">
+      <label for="apiKey">API Key</label>
+      <div class="api-key-wrap">
+        <input type="password" id="apiKey" autocomplete="off" placeholder="Paste your Trafiklab Realtime API key" />
+        <button class="show-btn" id="showHideBtn" onclick="toggleKey()">Show</button>
+      </div>
+      <p class="hint">
+        Get a free key at <strong>developer.trafiklab.se</strong> →
+        create a project → add <em>Trafiklab Realtime APIs</em> → Bronze tier.
+      </p>
+    </div>
+    <div class="save-row">
+      <button class="primary" onclick="saveApiKey()">Save API Key</button>
+      <span id="apiKeySaveMsg" class="msg"></span>
+    </div>
+  </div>
+
+  <!-- ── Stop Search ─────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Stop Search</div>
+    <div class="card-subtitle">
+      Search for your stop or station here, then save it.<br>
+      Saved stops will appear as options when you add a new <strong>Transport Board</strong> device in Homey.
+    </div>
+    <div class="field">
+      <label for="stopQuery">Stop name</label>
+      <div class="row">
+        <input type="text" id="stopQuery" placeholder="e.g. Centralstationen, Odenplan, Slussen"
+               onkeydown="if(event.key==='Enter') searchStop()" autocomplete="off" />
+        <button class="primary" id="stopSearchBtn" onclick="searchStop()">Search</button>
+      </div>
+      <p class="hint">Results come directly from the Trafiklab API using your saved key above.</p>
+    </div>
+    <div id="searchStatus" class="msg"></div>
+    <div id="searchResults"></div>
+  </div>
+
+  <!-- ── Saved Stops ─────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Saved Stops</div>
+    <div class="card-subtitle">
+      Stops saved here appear as options when adding a new <strong>Transport Board</strong> device in Homey.
+    </div>
+    <div id="savedStopsList"></div>
+  </div>
+
+  <!-- ── Global Defaults ─────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Global Defaults</div>
+    <div class="field">
+      <label for="defaultPollingInterval">Default polling interval for new devices</label>
+      <select id="defaultPollingInterval">
+        <option value="1">1 minute</option>
+        <option value="2">2 minutes</option>
+        <option value="5">5 minutes (recommended)</option>
+        <option value="10">10 minutes</option>
+        <option value="15">15 minutes</option>
+        <option value="30">30 minutes</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="toggle-row">
+        <div>
+          <label style="margin-bottom:2px">Debug Logging</label>
+          <p class="hint">Verbose API logs in Homey developer console.</p>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="debugLogging" />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+    </div>
+    <div class="save-row">
+      <button class="primary" onclick="saveDefaults()">Save Defaults</button>
+      <span id="settingsSaveMsg" class="msg"></span>
+    </div>
+  </div>
+
+  <p class="attribution">Data from Trafiklab.se · CC-BY 4.0</p>
+
+<script>
+'use strict';
+
+var _Homey = null;
+var _apiKey = '';
+var _savedStops = [];
+
+var TRANSPORT_LABELS = {
+  BUS:'Bus', TRAIN:'Train', TRAM:'Tram', METRO:'Metro', FERRY:'Ferry', AIR:'Air'
+};
+
+function onHomeyReady(Homey) {
+  _Homey = Homey;
+  Homey.ready();
+  loadAllSettings();
+}
+
+// ── Load all settings ────────────────────────────────────────────────
+
+function loadAllSettings() {
+  var keys = ['apiKey','defaultPollingInterval','debugLogging','savedStops'];
+  var remaining = keys.length;
+
+  keys.forEach(function(key) {
+    _Homey.get(key, function(err, value) {
+      remaining--;
+      if (!err && value !== null && value !== undefined) {
+        if (key === 'apiKey') {
+          _apiKey = value;
+          document.getElementById('apiKey').value = value;
+        } else if (key === 'defaultPollingInterval') {
+          document.getElementById('defaultPollingInterval').value = value;
+        } else if (key === 'debugLogging') {
+          document.getElementById('debugLogging').checked = Boolean(value);
+        } else if (key === 'savedStops') {
+          _savedStops = Array.isArray(value) ? value : [];
+        }
+      }
+      if (remaining === 0) renderSavedStops();
+    });
+  });
+}
+
+// ── API key ──────────────────────────────────────────────────────────
+
+function saveApiKey() {
+  var key = document.getElementById('apiKey').value.trim();
+  if (!key) { showMsg('apiKeySaveMsg', 'API key cannot be empty.', true); return; }
+
+  _Homey.set('apiKey', key, function(err) {
+    if (err) { showMsg('apiKeySaveMsg', 'Error saving.', true); return; }
+    _apiKey = key;
+    showMsg('apiKeySaveMsg', 'API key saved!', false);
+  });
+}
+
+function toggleKey() {
+  var inp = document.getElementById('apiKey');
+  var btn = document.getElementById('showHideBtn');
+  if (inp.type === 'password') { inp.type = 'text';     btn.textContent = 'Hide'; }
+  else                         { inp.type = 'password'; btn.textContent = 'Show'; }
+}
+
+// ── Defaults ─────────────────────────────────────────────────────────
+
+function saveDefaults() {
+  var pi = parseInt(document.getElementById('defaultPollingInterval').value, 10);
+  var dl = document.getElementById('debugLogging').checked;
+  var remaining = 2;
+  var hasErr = false;
+
+  function done(err) {
+    if (err) hasErr = true;
+    if (--remaining === 0) showMsg('settingsSaveMsg', hasErr ? 'Error saving.' : 'Saved!', hasErr);
+  }
+
+  _Homey.set('defaultPollingInterval', pi, done);
+  _Homey.set('debugLogging', dl, done);
+}
+
+// ── Stop search (calls Trafiklab API directly via fetch) ─────────────
+
+function searchStop() {
+  var query = document.getElementById('stopQuery').value.trim();
+  if (!query) { setSearchStatus('Please enter a stop name.', true); return; }
+
+  if (!_apiKey) {
+    setSearchStatus('Please save your API key first (section above).', true);
+    return;
+  }
+
+  var btn = document.getElementById('stopSearchBtn');
+  btn.disabled = true;
+  document.getElementById('searchResults').innerHTML = '';
+  setSearchStatus('Searching…', false);
+
+  var url = 'https://realtime-api.trafiklab.se/v1/stops/name/'
+    + encodeURIComponent(query) + '?key=' + encodeURIComponent(_apiKey);
+
+  fetch(url)
+    .then(function(res) {
+      if (res.status === 401) throw new Error('Invalid API key (401). Check your key above.');
+      if (res.status === 403) throw new Error('Access forbidden (403). Check API key permissions.');
+      if (res.status === 429) throw new Error('Rate limit exceeded (429). Wait a moment and retry.');
+      if (!res.ok)            throw new Error('API error: HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      btn.disabled = false;
+      var groups = (data && Array.isArray(data.stop_groups)) ? data.stop_groups : [];
+
+      if (groups.length === 0) {
+        setSearchStatus('No stops found. Try a different search term.', false);
+        return;
+      }
+
+      // Sort by busyness
+      groups.sort(function(a, b) {
+        return (b.average_daily_stop_times || 0) - (a.average_daily_stop_times || 0);
+      });
+
+      setSearchStatus(groups.length + ' stop' + (groups.length !== 1 ? 's' : '') + ' found:', false);
+      renderSearchResults(groups);
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      setSearchStatus('Error: ' + err.message, true);
+    });
+}
+
+function renderSearchResults(groups) {
+  var container = document.getElementById('searchResults');
+  container.innerHTML = '';
+
+  groups.forEach(function(group) {
+    var modes = Array.isArray(group.transport_modes)
+      ? group.transport_modes.map(function(m) { return String(m).toUpperCase(); })
+      : [];
+
+    var isAlreadySaved = _savedStops.some(function(s) { return s.id === String(group.id); });
+
+    var card = document.createElement('div');
+    card.className = 'stop-card';
+
+    var info = document.createElement('div');
+    info.className = 'stop-info';
+
+    var nameEl = document.createElement('div');
+    nameEl.className = 'stop-name';
+    nameEl.textContent = group.name;
+
+    var metaEl = document.createElement('div');
+    metaEl.className = 'stop-meta';
+
+    modes.forEach(function(m) {
+      var b = document.createElement('span');
+      b.className = 'badge ' + m;
+      b.textContent = TRANSPORT_LABELS[m] || m;
+      metaEl.appendChild(b);
+    });
+
+    if (isAlreadySaved) {
+      var savedBadge = document.createElement('span');
+      savedBadge.className = 'badge saved';
+      savedBadge.textContent = '✓ Saved';
+      metaEl.appendChild(savedBadge);
+    }
+
+    info.appendChild(nameEl);
+    info.appendChild(metaEl);
+
+    var btn = document.createElement('button');
+    btn.className = 'secondary';
+    btn.textContent = isAlreadySaved ? 'Remove' : 'Save Stop';
+    btn.onclick = (function(g, modes) {
+      return function() { toggleSaveStop(g, modes); };
+    })(group, modes);
+
+    card.appendChild(info);
+    card.appendChild(btn);
+    container.appendChild(card);
+  });
+}
+
+// ── Saved stops management ───────────────────────────────────────────
+
+function toggleSaveStop(group, modes) {
+  var id = String(group.id);
+  var idx = _savedStops.findIndex(function(s) { return s.id === id; });
+
+  if (idx >= 0) {
+    _savedStops.splice(idx, 1);
+  } else {
+    _savedStops.push({
+      id:             id,
+      name:           String(group.name),
+      transportTypes: modes,
+    });
+  }
+
+  persistSavedStops(function() {
+    renderSavedStops();
+    // Re-render search results so the saved badge updates
+    var query = document.getElementById('stopQuery').value.trim();
+    if (query) searchStop();
+  });
+}
+
+function persistSavedStops(callback) {
+  _Homey.set('savedStops', _savedStops, function(err) {
+    if (err) setSearchStatus('Error saving stop.', true);
+    if (callback) callback();
+  });
+}
+
+function renderSavedStops() {
+  var container = document.getElementById('savedStopsList');
+  container.innerHTML = '';
+
+  if (_savedStops.length === 0) {
+    var empty = document.createElement('div');
+    empty.className = 'no-stops';
+    empty.textContent = 'No stops saved yet. Search above and click "Save Stop".';
+    container.appendChild(empty);
+    return;
+  }
+
+  _savedStops.forEach(function(stop) {
+    var row = document.createElement('div');
+    row.className = 'saved-stop-row';
+
+    var left = document.createElement('div');
+    var nameEl = document.createElement('div');
+    nameEl.className = 'saved-stop-name';
+    nameEl.textContent = stop.name;
+    var idEl = document.createElement('div');
+    idEl.className = 'saved-stop-id';
+    idEl.textContent = 'ID: ' + stop.id;
+    left.appendChild(nameEl);
+    left.appendChild(idEl);
+
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'danger';
+    removeBtn.textContent = 'Remove';
+    removeBtn.onclick = (function(id) {
+      return function() {
+        _savedStops = _savedStops.filter(function(s) { return s.id !== id; });
+        persistSavedStops(renderSavedStops);
+      };
+    })(stop.id);
+
+    var btnGroup = document.createElement('div');
+    btnGroup.style.cssText = 'display:flex;gap:6px;align-items:center;flex-shrink:0';
+    btnGroup.appendChild(removeBtn);
+
+    row.appendChild(left);
+    row.appendChild(btnGroup);
+    container.appendChild(row);
+  });
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────
+
+function setSearchStatus(msg, isErr) {
+  var el = document.getElementById('searchStatus');
+  el.textContent = msg;
+  el.className = 'msg ' + (isErr ? 'err' : 'ok');
+}
+
+function showMsg(id, msg, isErr) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'msg ' + (isErr ? 'err' : 'ok');
+  clearTimeout(el._t);
+  el._t = setTimeout(function() { el.textContent = ''; el.className = 'msg'; }, 4000);
+}
+</script>
+</body>
+</html>

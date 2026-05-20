@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700">
+  <!--
+    Hero image — Swedish Public Transport
+    Export at 1000×700 → xlarge.png  |  500×350 → large.png
+    Transport icons rebuilt to match the reference icon set style.
+  -->
+
+  <!-- ── Background ─────────────────────────────────────────────────── -->
+  <rect width="1000" height="700" fill="#0b0c1a"/>
+
+  <!-- ── Subtle edge lightening ─────────────────────────────────────── -->
+  <defs>
+    <linearGradient id="gL" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0"   stop-color="#fff" stop-opacity="0.06"/>
+      <stop offset="1"   stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gR" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0"   stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1"   stop-color="#fff" stop-opacity="0.06"/>
+    </linearGradient>
+  </defs>
+  <rect x="0"   width="200" height="700" fill="url(#gL)"/>
+  <rect x="800" width="200" height="700" fill="url(#gR)"/>
+
+  <!-- ── Panel dividers ────────────────────────────────────────────── -->
+  <line x1="200" y1="40"  x2="200" y2="590" stroke="#1e4a7a" stroke-width="1.5"/>
+  <line x1="400" y1="40"  x2="400" y2="590" stroke="#1e4a7a" stroke-width="1.5"/>
+  <line x1="600" y1="40"  x2="600" y2="590" stroke="#1e4a7a" stroke-width="1.5"/>
+  <line x1="800" y1="40"  x2="800" y2="590" stroke="#1e4a7a" stroke-width="1.5"/>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       TRANSPORT ICONS — white on dark, each centred in a 200 px column.
+       All icons use local coords centred at (0,0); transform positions them.
+  ══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- ── BUS  (panel 1, cx=100, cy=270) ───────────────────────────── -->
+  <!--
+    Very rounded rectangular body (iOS-style radius), large windshield
+    cutout, two headlight holes near the base, small destination-sign bar
+    on the roof, two stub feet below the body.
+  -->
+  <g transform="translate(100,270)" fill="#ffffff">
+    <!-- Roof destination bar -->
+    <rect x="-22" y="-95" width="44" height="10" rx="4"/>
+    <!-- Body + windshield hole + headlight holes -->
+    <path fill-rule="evenodd" d="
+      M-55 -52 Q-55 -84 0 -84 Q55 -84 55 -52 L55 46 Q55 57 42 57 L-42 57 Q-55 57 -55 46 Z
+      M-42 -50 L42 -50 L42 -7 L-42 -7 Z
+      M-43 26 A13 13 0 1 0 -17 26 A13 13 0 1 0 -43 26 Z
+      M17 26 A13 13 0 1 0 43 26 A13 13 0 1 0 17 26 Z
+    "/>
+    <!-- Stub feet -->
+    <rect x="-44" y="57" width="17" height="14" rx="5"/>
+    <rect x="27"  y="57" width="17" height="14" rx="5"/>
+  </g>
+
+  <!-- ── TRAIN  (panel 2, cx=300, cy=270) ─────────────────────────── -->
+  <!--
+    Rectangular cab, thin roof bar, two equal square windows separated by
+    a centre pillar, headlight holes at the lower corners, two rail legs
+    and a cross-tie below.
+  -->
+  <g transform="translate(300,270)" fill="#ffffff">
+    <!-- Thin roof bar -->
+    <rect x="-44" y="-93" width="88" height="10" rx="4"/>
+    <!-- Body + two windows + headlight holes -->
+    <path fill-rule="evenodd" d="
+      M-56 -82 Q-56 -83 -41 -83 L41 -83 Q56 -83 56 -68 L56 44 Q56 56 0 56 Q-56 56 -56 44 Z
+      M-53 -80 L-7  -80 L-7  -25 L-53 -25 Z
+      M7   -80 L53  -80 L53  -25 L7   -25 Z
+      M-53 30 A13 13 0 1 0 -27 30 A13 13 0 1 0 -53 30 Z
+      M27  30 A13 13 0 1 0 53  30 A13 13 0 1 0 27  30 Z
+    "/>
+    <!-- Rail legs -->
+    <rect x="-46" y="56" width="13" height="34" rx="5"/>
+    <rect x="33"  y="56" width="13" height="34" rx="5"/>
+    <!-- Cross-tie -->
+    <rect x="-60" y="86" width="120" height="10" rx="4"/>
+  </g>
+
+  <!-- ── TRAM  (panel 3, cx=500, cy=270) ──────────────────────────── -->
+  <!--
+    Identical cab to train, plus a distinctive pantograph assembly on the
+    roof: wide horizontal collector bar + narrow mounting arm.
+  -->
+  <g transform="translate(500,270)" fill="#ffffff">
+    <!-- Pantograph: wide collector bar -->
+    <rect x="-52" y="-112" width="104" height="10" rx="4"/>
+    <!-- Pantograph: narrow mounting arm -->
+    <rect x="-11" y="-102" width="22"  height="20" rx="4"/>
+    <!-- Body + two windows + headlight holes (identical to train) -->
+    <path fill-rule="evenodd" d="
+      M-56 -82 Q-56 -83 -41 -83 L41 -83 Q56 -83 56 -68 L56 44 Q56 56 0 56 Q-56 56 -56 44 Z
+      M-53 -80 L-7  -80 L-7  -25 L-53 -25 Z
+      M7   -80 L53  -80 L53  -25 L7   -25 Z
+      M-53 30 A13 13 0 1 0 -27 30 A13 13 0 1 0 -53 30 Z
+      M27  30 A13 13 0 1 0 53  30 A13 13 0 1 0 27  30 Z
+    "/>
+    <!-- Rail legs + cross-tie -->
+    <rect x="-46" y="56" width="13" height="34" rx="5"/>
+    <rect x="33"  y="56" width="13" height="34" rx="5"/>
+    <rect x="-60" y="86" width="120" height="10" rx="4"/>
+  </g>
+
+  <!-- ── METRO  (panel 4, cx=700, cy=270) ─────────────────────────── -->
+  <!--
+    Aerodynamic arched nose (cubic-bezier arch), thin horizontal window
+    strip near the top, headlight holes at the lower corners of the
+    straight-sided section, rails below.
+  -->
+  <g transform="translate(700,270)" fill="#ffffff">
+    <!-- Arched body + window strip + headlight holes -->
+    <path fill-rule="evenodd" d="
+      M-56 44 L-56 6 C-56 -78 56 -78 56 6 L56 44 Z
+      M-40 -40 L40 -40 L40 -16 L-40 -16 Z
+      M-53 24 A13 13 0 1 0 -27 24 A13 13 0 1 0 -53 24 Z
+      M27  24 A13 13 0 1 0 53  24 A13 13 0 1 0 27  24 Z
+    "/>
+    <!-- Rail legs + cross-tie -->
+    <rect x="-46" y="44" width="13" height="34" rx="5"/>
+    <rect x="33"  y="44" width="13" height="34" rx="5"/>
+    <rect x="-60" y="74" width="120" height="10" rx="4"/>
+  </g>
+
+  <!-- ── FERRY  (panel 5, cx=900, cy=265) ─────────────────────────── -->
+  <!--
+    Chimney, rectangular wheelhouse/bridge, trapezoidal hull (wider at
+    the waterline), two rows of waves.
+  -->
+  <g transform="translate(900,265)" fill="#ffffff">
+    <!-- Chimney / funnel -->
+    <rect x="-15" y="-100" width="30" height="24" rx="5"/>
+    <!-- Wheelhouse / bridge -->
+    <rect x="-57" y="-76"  width="114" height="44" rx="7"/>
+    <!-- Hull — wider at waterline than at deck -->
+    <path d="M-57 -32 L-70 44 L70 44 L57 -32 Z"/>
+    <!-- Wave 1 -->
+    <path d="
+      M-74 56 Q-60 46 -46 56 Q-32 66 -18 56 Q-4 46 10 56 Q24 66 38 56 Q52 46 66 56 Q72 60 74 56
+      L74 67 Q72 63 66 67 Q52 77 38 67 Q24 57 10 67 Q-4 77 -18 67 Q-32 57 -46 67 Q-60 77 -74 67 Z
+    "/>
+    <!-- Wave 2 -->
+    <path d="
+      M-74 76 Q-60 66 -46 76 Q-32 86 -18 76 Q-4 66 10 76 Q24 86 38 76 Q52 66 66 76 Q72 80 74 76
+      L74 87 Q72 83 66 87 Q52 97 38 87 Q24 77 10 87 Q-4 97 -18 87 Q-32 77 -46 87 Q-60 97 -74 87 Z
+    "/>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       MODE LABELS
+  ══════════════════════════════════════════════════════════════════════ -->
+  <text x="100" y="500" text-anchor="middle" fill="#4a90c4"
+        font-family="'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="22" font-weight="700" letter-spacing="4">BUS</text>
+  <text x="300" y="500" text-anchor="middle" fill="#4a90c4"
+        font-family="'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="22" font-weight="700" letter-spacing="4">TRAIN</text>
+  <text x="500" y="500" text-anchor="middle" fill="#4a90c4"
+        font-family="'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="22" font-weight="700" letter-spacing="4">TRAM</text>
+  <text x="700" y="500" text-anchor="middle" fill="#4a90c4"
+        font-family="'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="22" font-weight="700" letter-spacing="4">METRO</text>
+  <text x="900" y="500" text-anchor="middle" fill="#4a90c4"
+        font-family="'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="22" font-weight="700" letter-spacing="4">FERRY</text>
+
+  <!-- ── Bottom title bar ───────────────────────────────────────────── -->
+  <rect x="0" y="540" width="1000" height="160" fill="#070810"/>
+  <line x1="0" y1="540" x2="1000" y2="540" stroke="#1e4a7a" stroke-width="1.5"/>
+
+  <text x="500" y="640" text-anchor="middle" fill="#ffffff"
+        font-family="'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="52" font-weight="700" letter-spacing="1">Swedish Public Transport</text>
+</svg>

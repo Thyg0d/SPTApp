@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!--
+    Transit info pillar — a pole-mounted departure board.
+    The board frame uses evenodd so the screen area is transparent
+    (showing Homey's tile colour as the "display background").
+    Four rows each show: line pill | destination bar | time pill.
+  -->
+
+  <!-- Board frame with transparent screen area -->
+  <path fill-rule="evenodd" fill="#000" d="
+    M6 10 Q6 5 50 5 Q94 5 94 10 L94 75 Q94 80 50 80 Q6 80 6 75 Z
+    M13 17 L87 17 L87 73 L13 73 Z
+  "/>
+
+  <!-- Departure row 1: line · destination · time -->
+  <rect x="17" y="21" width="14" height="9" rx="3"   fill="#000"/>
+  <rect x="34" y="21" width="36" height="9" rx="2"   fill="#000"/>
+  <rect x="74" y="21" width="11" height="9" rx="3"   fill="#000"/>
+
+  <!-- Departure row 2 -->
+  <rect x="17" y="34" width="14" height="9" rx="3"   fill="#000"/>
+  <rect x="34" y="34" width="28" height="9" rx="2"   fill="#000"/>
+  <rect x="74" y="34" width="11" height="9" rx="3"   fill="#000"/>
+
+  <!-- Departure row 3 -->
+  <rect x="17" y="47" width="14" height="9" rx="3"   fill="#000"/>
+  <rect x="34" y="47" width="32" height="9" rx="2"   fill="#000"/>
+  <rect x="74" y="47" width="11" height="9" rx="3"   fill="#000"/>
+
+  <!-- Departure row 4 -->
+  <rect x="17" y="60" width="14" height="9" rx="3"   fill="#000"/>
+  <rect x="34" y="60" width="22" height="9" rx="2"   fill="#000"/>
+  <rect x="74" y="60" width="11" height="9" rx="3"   fill="#000"/>
+
+  <!-- Mounting pole below the board -->
+  <rect x="45" y="80" width="10" height="17" rx="5"  fill="#000"/>
+</svg>

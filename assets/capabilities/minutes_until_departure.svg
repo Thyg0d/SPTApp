@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Hourglass: outer shape minus inner transparent sand triangles via evenodd -->
+  <path fill-rule="evenodd" fill="#000" d="
+    M18 8 L82 8 L82 12 L55 46 L55 54 L82 88 L82 92 L18 92 L18 88 L45 54 L45 46 L18 12 Z
+    M24 14 L76 14 L53 43 L47 43 Z
+    M47 57 L53 57 L72 86 L28 86 Z
+  "/>
+</svg>
