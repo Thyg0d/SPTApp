@@ -1,9 +1,11 @@
 {
   "id": "com.thyg0d.swedish-public-transport",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "compatibility": ">=5.0.0",
   "sdk": 3,
-  "platforms": ["local"],
+  "platforms": [
+    "local"
+  ],
   "name": {
     "en": "Swedish Public Transport",
     "sv": "Svensk kollektivtrafik"
@@ -14,12 +16,25 @@
   },
   "tags": {
     "en": [
-      "public transport", "bus", "train", "tram", "metro", "ferry",
-      "departures", "arrivals", "trafiklab", "sweden", "transit", "SL",
-      "departure board", "real-time"
+      "public transport",
+      "bus",
+      "train",
+      "tram",
+      "metro",
+      "ferry",
+      "departures",
+      "arrivals",
+      "trafiklab",
+      "sweden",
+      "transit",
+      "SL",
+      "departure board",
+      "real-time"
     ]
   },
-  "category": ["tools"],
+  "category": [
+    "tools"
+  ],
   "permissions": [],
   "images": {
     "large": "/assets/images/large.png",
@@ -33,11 +48,12 @@
   "homepage": "https://github.com/Thyg0d/SPTApp",
   "support": "https://github.com/Thyg0d/SPTApp/issues",
   "brandColor": "#0070C0",
-
   "capabilities": {
     "next_departure_time": {
       "type": "string",
-      "title": { "en": "Next Departure" },
+      "title": {
+        "en": "Next Departure"
+      },
       "getable": true,
       "setable": false,
       "insights": false,
@@ -46,7 +62,9 @@
     },
     "departure_line": {
       "type": "string",
-      "title": { "en": "Line" },
+      "title": {
+        "en": "Line"
+      },
       "getable": true,
       "setable": false,
       "insights": false,
@@ -55,7 +73,9 @@
     },
     "departure_destination": {
       "type": "string",
-      "title": { "en": "Destination" },
+      "title": {
+        "en": "Destination"
+      },
       "getable": true,
       "setable": false,
       "insights": false,
@@ -64,29 +84,39 @@
     },
     "delay_minutes": {
       "type": "number",
-      "title": { "en": "Delay" },
+      "title": {
+        "en": "Delay"
+      },
       "getable": true,
       "setable": false,
       "insights": true,
       "uiComponent": "sensor",
-      "units": { "en": "min" },
+      "units": {
+        "en": "min"
+      },
       "decimals": 0,
       "icon": "/assets/capabilities/delay_minutes.svg"
     },
     "minutes_until_departure": {
       "type": "number",
-      "title": { "en": "Departs in" },
+      "title": {
+        "en": "Departs in"
+      },
       "getable": true,
       "setable": false,
       "insights": false,
       "uiComponent": "sensor",
-      "units": { "en": "min" },
+      "units": {
+        "en": "min"
+      },
       "decimals": 0,
       "icon": "/assets/capabilities/minutes_until_departure.svg"
     },
     "monitoring_enabled": {
       "type": "boolean",
-      "title": { "en": "Monitoring" },
+      "title": {
+        "en": "Monitoring"
+      },
       "getable": true,
       "setable": true,
       "insights": false,
@@ -95,7 +125,9 @@
     },
     "last_updated": {
       "type": "string",
-      "title": { "en": "Last Updated" },
+      "title": {
+        "en": "Last Updated"
+      },
       "getable": true,
       "setable": false,
       "insights": false,
@@ -104,7 +136,9 @@
     },
     "api_status": {
       "type": "string",
-      "title": { "en": "Status" },
+      "title": {
+        "en": "Status"
+      },
       "getable": true,
       "setable": false,
       "insights": false,
@@ -112,7 +146,6 @@
       "icon": "/assets/capabilities/api_status.svg"
     }
   },
-
   "drivers": [
     {
       "id": "transport-board",
@@ -151,7 +184,9 @@
         {
           "id": "list_devices",
           "template": "list_devices",
-          "navigation": { "next": "add_devices" }
+          "navigation": {
+            "next": "add_devices"
+          }
         },
         {
           "id": "add_devices",
@@ -161,68 +196,136 @@
       "settings": [
         {
           "type": "group",
-          "label": { "en": "Polling" },
+          "label": {
+            "en": "Polling"
+          },
           "children": [
             {
               "id": "pollingInterval",
               "type": "number",
-              "label": { "en": "Polling interval" },
-              "hint": { "en": "How often to fetch new data (1–60 minutes). The Trafiklab server caches data for 60 seconds, so intervals below 1 minute waste API quota." },
+              "label": {
+                "en": "Polling interval"
+              },
+              "hint": {
+                "en": "How often to fetch new data (1–60 minutes). The Trafiklab server caches data for 60 seconds, so intervals below 1 minute waste API quota."
+              },
               "value": 5,
               "min": 1,
               "max": 60,
-              "units": { "en": "min" }
+              "units": {
+                "en": "min"
+              }
             }
           ]
         },
         {
           "type": "group",
-          "label": { "en": "Board Type" },
+          "label": {
+            "en": "Board Type"
+          },
           "children": [
             {
               "id": "boardType",
               "type": "dropdown",
-              "label": { "en": "Show" },
-              "hint": { "en": "Departures: buses/trains leaving this stop. Arrivals: vehicles arriving at this stop." },
+              "label": {
+                "en": "Show"
+              },
+              "hint": {
+                "en": "Departures: buses/trains leaving this stop. Arrivals: vehicles arriving at this stop."
+              },
               "value": "departures",
               "values": [
-                { "id": "departures", "label": { "en": "Departures" } },
-                { "id": "arrivals",   "label": { "en": "Arrivals"   } }
+                {
+                  "id": "departures",
+                  "label": {
+                    "en": "Departures"
+                  }
+                },
+                {
+                  "id": "arrivals",
+                  "label": {
+                    "en": "Arrivals"
+                  }
+                }
               ]
             }
           ]
         },
         {
           "type": "group",
-          "label": { "en": "Filters" },
+          "label": {
+            "en": "Filters"
+          },
           "children": [
             {
               "id": "transportTypeFilter",
               "type": "dropdown",
-              "label": { "en": "Transport type" },
-              "hint": { "en": "Filter to a specific transport mode, or show all." },
+              "label": {
+                "en": "Transport type"
+              },
+              "hint": {
+                "en": "Filter to a specific transport mode, or show all."
+              },
               "value": "ALL",
               "values": [
-                { "id": "ALL",   "label": { "en": "All transport types" } },
-                { "id": "BUS",   "label": { "en": "Bus"                } },
-                { "id": "TRAIN", "label": { "en": "Train"              } },
-                { "id": "TRAM",  "label": { "en": "Tram"               } },
-                { "id": "METRO", "label": { "en": "Metro / Subway"     } },
-                { "id": "FERRY", "label": { "en": "Ferry / Boat"       } }
+                {
+                  "id": "ALL",
+                  "label": {
+                    "en": "All transport types"
+                  }
+                },
+                {
+                  "id": "BUS",
+                  "label": {
+                    "en": "Bus"
+                  }
+                },
+                {
+                  "id": "TRAIN",
+                  "label": {
+                    "en": "Train"
+                  }
+                },
+                {
+                  "id": "TRAM",
+                  "label": {
+                    "en": "Tram"
+                  }
+                },
+                {
+                  "id": "METRO",
+                  "label": {
+                    "en": "Metro / Subway"
+                  }
+                },
+                {
+                  "id": "FERRY",
+                  "label": {
+                    "en": "Ferry / Boat"
+                  }
+                }
               ]
             },
             {
               "id": "lineFilter",
               "type": "text",
-              "label": { "en": "Line filter (optional)" },
-              "hint": { "en": "Show only departures for this line number or name (e.g. '14', '42X', 'Pendeltåg'). Leave empty for all lines. Case-insensitive partial match." },
+              "label": {
+                "en": "Line filter (optional)"
+              },
+              "hint": {
+                "en": "Show only departures for this line number or name (e.g. '14', '42X', 'Pendeltåg'). Leave empty for all lines. Case-insensitive partial match."
+              },
               "value": ""
             },
             {
               "id": "destinationFilter",
               "type": "text",
-              "label": { "en": "Destination filter (optional)" },
-              "hint": { "en": "Show only departures towards this destination (e.g. 'Centralstationen'). Leave empty for all destinations. Case-insensitive partial match." },
+              "label": {
+                "en": "Destination filter (optional)"
+              },
+              "hint": {
+                "en": "Show only departures towards this destination (e.g. 'Centralstationen'). Leave empty for all destinations. Case-insensitive partial match."
+              },
               "value": ""
             }
           ]
@@ -230,7 +333,6 @@
       ]
     }
   ],
-
   "flow": {
     "triggers": [
       {
@@ -249,22 +351,158 @@
           }
         ],
         "tokens": [
-          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:32" } },
-          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:27" } },
-          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:32" } },
-          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "14" } },
-          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Centralstationen" } },
-          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Centralstationen" } },
-          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "BUS" } },
-          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "A" } },
-          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 5 },
-          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "+5 min late" } },
-          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": false },
-          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
-          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
-          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Odenplan" } },
-          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "Keolis" } },
-          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Järfälla" } }
+          {
+            "name": "departure_time",
+            "type": "string",
+            "title": {
+              "en": "Departure time"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "scheduled_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Scheduled departure"
+            },
+            "example": {
+              "en": "14:27"
+            }
+          },
+          {
+            "name": "realtime_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Realtime departure"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "line_name",
+            "type": "string",
+            "title": {
+              "en": "Line"
+            },
+            "example": {
+              "en": "14"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction"
+            },
+            "example": {
+              "en": "towards Centralstationen"
+            }
+          },
+          {
+            "name": "destination",
+            "type": "string",
+            "title": {
+              "en": "Destination"
+            },
+            "example": {
+              "en": "Centralstationen"
+            }
+          },
+          {
+            "name": "transport_type",
+            "type": "string",
+            "title": {
+              "en": "Transport type"
+            },
+            "example": {
+              "en": "BUS"
+            }
+          },
+          {
+            "name": "platform",
+            "type": "string",
+            "title": {
+              "en": "Platform / track"
+            },
+            "example": {
+              "en": "A"
+            }
+          },
+          {
+            "name": "delay_minutes",
+            "type": "number",
+            "title": {
+              "en": "Delay (minutes)"
+            },
+            "example": 5
+          },
+          {
+            "name": "delay_text",
+            "type": "string",
+            "title": {
+              "en": "Delay text"
+            },
+            "example": {
+              "en": "+5 min late"
+            }
+          },
+          {
+            "name": "is_cancelled",
+            "type": "boolean",
+            "title": {
+              "en": "Is cancelled"
+            },
+            "example": false
+          },
+          {
+            "name": "realtime_available",
+            "type": "boolean",
+            "title": {
+              "en": "Realtime data available"
+            },
+            "example": true
+          },
+          {
+            "name": "minutes_until_departure",
+            "type": "number",
+            "title": {
+              "en": "Minutes until departure"
+            },
+            "example": 8
+          },
+          {
+            "name": "stop_name",
+            "type": "string",
+            "title": {
+              "en": "Stop name"
+            },
+            "example": {
+              "en": "Odenplan"
+            }
+          },
+          {
+            "name": "operator",
+            "type": "string",
+            "title": {
+              "en": "Operator"
+            },
+            "example": {
+              "en": "Keolis"
+            }
+          },
+          {
+            "name": "origin",
+            "type": "string",
+            "title": {
+              "en": "Origin"
+            },
+            "example": {
+              "en": "Järfälla"
+            }
+          }
         ]
       },
       {
@@ -287,29 +525,169 @@
           {
             "type": "number",
             "name": "minutes",
-            "title": { "en": "Within (minutes)" },
+            "title": {
+              "en": "Within (minutes)"
+            },
             "min": 1,
             "max": 120,
-            "placeholder": { "en": "e.g. 10" }
+            "placeholder": {
+              "en": "e.g. 10"
+            }
           }
         ],
         "tokens": [
-          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:32" } },
-          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:27" } },
-          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:32" } },
-          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "14" } },
-          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Centralstationen" } },
-          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Centralstationen" } },
-          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "BUS" } },
-          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "A" } },
-          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 0 },
-          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "On time" } },
-          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": false },
-          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
-          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
-          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Odenplan" } },
-          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "Keolis" } },
-          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Järfälla" } }
+          {
+            "name": "departure_time",
+            "type": "string",
+            "title": {
+              "en": "Departure time"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "scheduled_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Scheduled departure"
+            },
+            "example": {
+              "en": "14:27"
+            }
+          },
+          {
+            "name": "realtime_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Realtime departure"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "line_name",
+            "type": "string",
+            "title": {
+              "en": "Line"
+            },
+            "example": {
+              "en": "14"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction"
+            },
+            "example": {
+              "en": "towards Centralstationen"
+            }
+          },
+          {
+            "name": "destination",
+            "type": "string",
+            "title": {
+              "en": "Destination"
+            },
+            "example": {
+              "en": "Centralstationen"
+            }
+          },
+          {
+            "name": "transport_type",
+            "type": "string",
+            "title": {
+              "en": "Transport type"
+            },
+            "example": {
+              "en": "BUS"
+            }
+          },
+          {
+            "name": "platform",
+            "type": "string",
+            "title": {
+              "en": "Platform / track"
+            },
+            "example": {
+              "en": "A"
+            }
+          },
+          {
+            "name": "delay_minutes",
+            "type": "number",
+            "title": {
+              "en": "Delay (minutes)"
+            },
+            "example": 0
+          },
+          {
+            "name": "delay_text",
+            "type": "string",
+            "title": {
+              "en": "Delay text"
+            },
+            "example": {
+              "en": "On time"
+            }
+          },
+          {
+            "name": "is_cancelled",
+            "type": "boolean",
+            "title": {
+              "en": "Is cancelled"
+            },
+            "example": false
+          },
+          {
+            "name": "realtime_available",
+            "type": "boolean",
+            "title": {
+              "en": "Realtime data available"
+            },
+            "example": true
+          },
+          {
+            "name": "minutes_until_departure",
+            "type": "number",
+            "title": {
+              "en": "Minutes until departure"
+            },
+            "example": 8
+          },
+          {
+            "name": "stop_name",
+            "type": "string",
+            "title": {
+              "en": "Stop name"
+            },
+            "example": {
+              "en": "Odenplan"
+            }
+          },
+          {
+            "name": "operator",
+            "type": "string",
+            "title": {
+              "en": "Operator"
+            },
+            "example": {
+              "en": "Keolis"
+            }
+          },
+          {
+            "name": "origin",
+            "type": "string",
+            "title": {
+              "en": "Origin"
+            },
+            "example": {
+              "en": "Järfälla"
+            }
+          }
         ]
       },
       {
@@ -328,22 +706,158 @@
           }
         ],
         "tokens": [
-          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:32" } },
-          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:32" } },
-          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:32" } },
-          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "43" } },
-          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Stockholm C" } },
-          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Stockholm C" } },
-          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "TRAIN" } },
-          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "3" } },
-          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 0 },
-          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "On time" } },
-          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": true },
-          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
-          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
-          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Bålsta" } },
-          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "SJ" } },
-          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Enköping" } }
+          {
+            "name": "departure_time",
+            "type": "string",
+            "title": {
+              "en": "Departure time"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "scheduled_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Scheduled departure"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "realtime_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Realtime departure"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "line_name",
+            "type": "string",
+            "title": {
+              "en": "Line"
+            },
+            "example": {
+              "en": "43"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction"
+            },
+            "example": {
+              "en": "towards Stockholm C"
+            }
+          },
+          {
+            "name": "destination",
+            "type": "string",
+            "title": {
+              "en": "Destination"
+            },
+            "example": {
+              "en": "Stockholm C"
+            }
+          },
+          {
+            "name": "transport_type",
+            "type": "string",
+            "title": {
+              "en": "Transport type"
+            },
+            "example": {
+              "en": "TRAIN"
+            }
+          },
+          {
+            "name": "platform",
+            "type": "string",
+            "title": {
+              "en": "Platform / track"
+            },
+            "example": {
+              "en": "3"
+            }
+          },
+          {
+            "name": "delay_minutes",
+            "type": "number",
+            "title": {
+              "en": "Delay (minutes)"
+            },
+            "example": 0
+          },
+          {
+            "name": "delay_text",
+            "type": "string",
+            "title": {
+              "en": "Delay text"
+            },
+            "example": {
+              "en": "On time"
+            }
+          },
+          {
+            "name": "is_cancelled",
+            "type": "boolean",
+            "title": {
+              "en": "Is cancelled"
+            },
+            "example": true
+          },
+          {
+            "name": "realtime_available",
+            "type": "boolean",
+            "title": {
+              "en": "Realtime data available"
+            },
+            "example": true
+          },
+          {
+            "name": "minutes_until_departure",
+            "type": "number",
+            "title": {
+              "en": "Minutes until departure"
+            },
+            "example": 8
+          },
+          {
+            "name": "stop_name",
+            "type": "string",
+            "title": {
+              "en": "Stop name"
+            },
+            "example": {
+              "en": "Bålsta"
+            }
+          },
+          {
+            "name": "operator",
+            "type": "string",
+            "title": {
+              "en": "Operator"
+            },
+            "example": {
+              "en": "SJ"
+            }
+          },
+          {
+            "name": "origin",
+            "type": "string",
+            "title": {
+              "en": "Origin"
+            },
+            "example": {
+              "en": "Enköping"
+            }
+          }
         ]
       },
       {
@@ -362,22 +876,158 @@
           }
         ],
         "tokens": [
-          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:32" } },
-          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:32" } },
-          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:32" } },
-          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "43" } },
-          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Stockholm C" } },
-          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Stockholm C" } },
-          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "TRAIN" } },
-          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "3" } },
-          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 0 },
-          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "On time" } },
-          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": false },
-          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
-          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
-          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Bålsta" } },
-          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "SJ" } },
-          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Enköping" } }
+          {
+            "name": "departure_time",
+            "type": "string",
+            "title": {
+              "en": "Departure time"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "scheduled_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Scheduled departure"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "realtime_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Realtime departure"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "line_name",
+            "type": "string",
+            "title": {
+              "en": "Line"
+            },
+            "example": {
+              "en": "43"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction"
+            },
+            "example": {
+              "en": "towards Stockholm C"
+            }
+          },
+          {
+            "name": "destination",
+            "type": "string",
+            "title": {
+              "en": "Destination"
+            },
+            "example": {
+              "en": "Stockholm C"
+            }
+          },
+          {
+            "name": "transport_type",
+            "type": "string",
+            "title": {
+              "en": "Transport type"
+            },
+            "example": {
+              "en": "TRAIN"
+            }
+          },
+          {
+            "name": "platform",
+            "type": "string",
+            "title": {
+              "en": "Platform / track"
+            },
+            "example": {
+              "en": "3"
+            }
+          },
+          {
+            "name": "delay_minutes",
+            "type": "number",
+            "title": {
+              "en": "Delay (minutes)"
+            },
+            "example": 0
+          },
+          {
+            "name": "delay_text",
+            "type": "string",
+            "title": {
+              "en": "Delay text"
+            },
+            "example": {
+              "en": "On time"
+            }
+          },
+          {
+            "name": "is_cancelled",
+            "type": "boolean",
+            "title": {
+              "en": "Is cancelled"
+            },
+            "example": false
+          },
+          {
+            "name": "realtime_available",
+            "type": "boolean",
+            "title": {
+              "en": "Realtime data available"
+            },
+            "example": true
+          },
+          {
+            "name": "minutes_until_departure",
+            "type": "number",
+            "title": {
+              "en": "Minutes until departure"
+            },
+            "example": 8
+          },
+          {
+            "name": "stop_name",
+            "type": "string",
+            "title": {
+              "en": "Stop name"
+            },
+            "example": {
+              "en": "Bålsta"
+            }
+          },
+          {
+            "name": "operator",
+            "type": "string",
+            "title": {
+              "en": "Operator"
+            },
+            "example": {
+              "en": "SJ"
+            }
+          },
+          {
+            "name": "origin",
+            "type": "string",
+            "title": {
+              "en": "Origin"
+            },
+            "example": {
+              "en": "Enköping"
+            }
+          }
         ]
       },
       {
@@ -400,33 +1050,172 @@
           {
             "type": "number",
             "name": "min_delay_minutes",
-            "title": { "en": "Minimum delay (minutes)" },
+            "title": {
+              "en": "Minimum delay (minutes)"
+            },
             "min": 1,
             "max": 60,
-            "placeholder": { "en": "e.g. 1" }
+            "placeholder": {
+              "en": "e.g. 1"
+            }
           }
         ],
         "tokens": [
-          { "name": "departure_time",           "type": "string",  "title": { "en": "Departure time" },           "example": { "en": "14:37" } },
-          { "name": "scheduled_departure_time", "type": "string",  "title": { "en": "Scheduled departure" },       "example": { "en": "14:32" } },
-          { "name": "realtime_departure_time",  "type": "string",  "title": { "en": "Realtime departure" },        "example": { "en": "14:37" } },
-          { "name": "line_name",                "type": "string",  "title": { "en": "Line" },                      "example": { "en": "14" } },
-          { "name": "direction",                "type": "string",  "title": { "en": "Direction" },                 "example": { "en": "towards Centralstationen" } },
-          { "name": "destination",              "type": "string",  "title": { "en": "Destination" },               "example": { "en": "Centralstationen" } },
-          { "name": "transport_type",           "type": "string",  "title": { "en": "Transport type" },            "example": { "en": "TRAIN" } },
-          { "name": "platform",                 "type": "string",  "title": { "en": "Platform / track" },          "example": { "en": "3" } },
-          { "name": "delay_minutes",            "type": "number",  "title": { "en": "Delay (minutes)" },           "example": 5 },
-          { "name": "delay_text",               "type": "string",  "title": { "en": "Delay text" },                "example": { "en": "+5 min late" } },
-          { "name": "is_cancelled",             "type": "boolean", "title": { "en": "Is cancelled" },              "example": false },
-          { "name": "realtime_available",       "type": "boolean", "title": { "en": "Realtime data available" },   "example": true },
-          { "name": "minutes_until_departure",  "type": "number",  "title": { "en": "Minutes until departure" },   "example": 8 },
-          { "name": "stop_name",                "type": "string",  "title": { "en": "Stop name" },                 "example": { "en": "Odenplan" } },
-          { "name": "operator",                 "type": "string",  "title": { "en": "Operator" },                  "example": { "en": "Keolis" } },
-          { "name": "origin",                   "type": "string",  "title": { "en": "Origin" },                    "example": { "en": "Järfälla" } }
+          {
+            "name": "departure_time",
+            "type": "string",
+            "title": {
+              "en": "Departure time"
+            },
+            "example": {
+              "en": "14:37"
+            }
+          },
+          {
+            "name": "scheduled_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Scheduled departure"
+            },
+            "example": {
+              "en": "14:32"
+            }
+          },
+          {
+            "name": "realtime_departure_time",
+            "type": "string",
+            "title": {
+              "en": "Realtime departure"
+            },
+            "example": {
+              "en": "14:37"
+            }
+          },
+          {
+            "name": "line_name",
+            "type": "string",
+            "title": {
+              "en": "Line"
+            },
+            "example": {
+              "en": "14"
+            }
+          },
+          {
+            "name": "direction",
+            "type": "string",
+            "title": {
+              "en": "Direction"
+            },
+            "example": {
+              "en": "towards Centralstationen"
+            }
+          },
+          {
+            "name": "destination",
+            "type": "string",
+            "title": {
+              "en": "Destination"
+            },
+            "example": {
+              "en": "Centralstationen"
+            }
+          },
+          {
+            "name": "transport_type",
+            "type": "string",
+            "title": {
+              "en": "Transport type"
+            },
+            "example": {
+              "en": "TRAIN"
+            }
+          },
+          {
+            "name": "platform",
+            "type": "string",
+            "title": {
+              "en": "Platform / track"
+            },
+            "example": {
+              "en": "3"
+            }
+          },
+          {
+            "name": "delay_minutes",
+            "type": "number",
+            "title": {
+              "en": "Delay (minutes)"
+            },
+            "example": 5
+          },
+          {
+            "name": "delay_text",
+            "type": "string",
+            "title": {
+              "en": "Delay text"
+            },
+            "example": {
+              "en": "+5 min late"
+            }
+          },
+          {
+            "name": "is_cancelled",
+            "type": "boolean",
+            "title": {
+              "en": "Is cancelled"
+            },
+            "example": false
+          },
+          {
+            "name": "realtime_available",
+            "type": "boolean",
+            "title": {
+              "en": "Realtime data available"
+            },
+            "example": true
+          },
+          {
+            "name": "minutes_until_departure",
+            "type": "number",
+            "title": {
+              "en": "Minutes until departure"
+            },
+            "example": 8
+          },
+          {
+            "name": "stop_name",
+            "type": "string",
+            "title": {
+              "en": "Stop name"
+            },
+            "example": {
+              "en": "Odenplan"
+            }
+          },
+          {
+            "name": "operator",
+            "type": "string",
+            "title": {
+              "en": "Operator"
+            },
+            "example": {
+              "en": "Keolis"
+            }
+          },
+          {
+            "name": "origin",
+            "type": "string",
+            "title": {
+              "en": "Origin"
+            },
+            "example": {
+              "en": "Järfälla"
+            }
+          }
         ]
       }
     ],
-
     "conditions": [
       {
         "id": "is_delayed",
@@ -464,15 +1253,18 @@
           {
             "type": "number",
             "name": "minutes",
-            "title": { "en": "Minutes" },
+            "title": {
+              "en": "Minutes"
+            },
             "min": 1,
             "max": 120,
-            "placeholder": { "en": "e.g. 15" }
+            "placeholder": {
+              "en": "e.g. 15"
+            }
           }
         ]
       }
     ],
-
     "actions": [
       {
         "id": "refresh_now",
@@ -513,10 +1305,22 @@
           {
             "type": "dropdown",
             "name": "enabled",
-            "title": { "en": "Monitoring" },
+            "title": {
+              "en": "Monitoring"
+            },
             "values": [
-              { "id": "true",  "label": { "en": "on"  } },
-              { "id": "false", "label": { "en": "off" } }
+              {
+                "id": "true",
+                "label": {
+                  "en": "on"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "off"
+                }
+              }
             ]
           }
         ]
