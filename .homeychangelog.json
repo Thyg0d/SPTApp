@@ -4,5 +4,8 @@
   },
   "1.1.0": {
     "en": "Fixed: departures now sorted by effective (realtime) time, so a heavily-delayed bus no longer hides an on-time bus coming in minutes. Fixed: the same stop can now be added as multiple boards (useful for tracking different directions at one station). New: flow action card to enable or disable monitoring from a flow."
+  },
+  "1.1.1": {
+    "en": "Bug fixes based on community feedback. The board now always shows the departure that actually leaves next — a bus or train with a large reported delay no longer pushes a normal on-time service out of view. You can also now add the same stop more than once, which is handy for stations where you want to track different lines or directions on separate boards. A new flow action lets you pause and resume monitoring directly from a flow."
   }
 }
