@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* ── Reset ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Layout ─────────────────────────────────────────────────────── */
+    body {
+      font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+      color: var(--homey-text-color);
+      background: transparent;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .widget {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    /* ── Stop name ───────────────────────────────────────────────────── */
+    .stop-name {
+      font-size: var(--homey-font-size-small, 14px);
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--homey-text-color-blue);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Main departure row ──────────────────────────────────────────── */
+    .departure-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .line-badge {
+      min-width: 42px;
+      height: 42px;
+      border-radius: var(--homey-border-radius-default, 8px);
+      background: var(--homey-text-color-blue);
+      color: var(--homey-text-color-white, #fff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--homey-font-size-small, 14px);
+      font-weight: 700;
+      flex-shrink: 0;
+      padding: 0 6px;
+      white-space: nowrap;
+    }
+
+    .middle {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .destination {
+      font-size: var(--homey-font-size-default, 17px);
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .time-delay {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .dep-time {
+      font-size: var(--homey-font-size-small, 14px);
+      color: var(--homey-text-color-light);
+    }
+
+    .delay-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .delay-late      { color: var(--homey-text-color-orange); background: rgba(255,165,0,0.15); }
+    .delay-cancelled { color: var(--homey-text-color-red);    background: rgba(255,0,0,0.12);   }
+
+    /* ── Countdown ───────────────────────────────────────────────────── */
+    .countdown-col { flex-shrink: 0; text-align: right; }
+
+    .countdown {
+      font-size: var(--homey-font-size-xxlarge, 32px);
+      font-weight: 700;
+      line-height: 1;
+    }
+    .countdown-unit {
+      font-size: var(--homey-font-size-small, 14px);
+      font-weight: 400;
+      color: var(--homey-text-color-light);
+    }
+    .c-green  { color: var(--homey-text-color-green);  }
+    .c-orange { color: var(--homey-text-color-orange); }
+    .c-red    { color: var(--homey-text-color-red);    }
+
+    /* ── Footer ──────────────────────────────────────────────────────── */
+    hr.sep {
+      border: none;
+      border-top: var(--homey-line, 1px solid rgba(128,128,128,0.2));
+      margin: 0;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--homey-text-color-light);
+    }
+
+    /* ── Empty / error states ────────────────────────────────────────── */
+    .center-msg {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--homey-font-size-small, 14px);
+      color: var(--homey-text-color-light);
+      text-align: center;
+      padding: 0 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"><div class="center-msg">Loading…</div></div>
+
+  <script>
+    /* ── Entry point ─────────────────────────────────────────────────── */
+    function onHomeyReady(Homey) {
+      let deviceId = null;
+
+      Homey.getSettings()
+        .then(() => {
+          const ids = Homey.getDeviceIds();
+          deviceId = Array.isArray(ids) && ids.length > 0 ? ids[0] : null;
+
+          if (!deviceId) {
+            showMsg('Choose a Transport Board in widget settings');
+            return Homey.ready();
+          }
+
+          return fetchAndRender(Homey, deviceId).then(() => {
+            Homey.ready();
+            setInterval(() => fetchAndRender(Homey, deviceId), 30000);
+          });
+        })
+        .catch(err => {
+          console.error(err);
+          showMsg('Could not load widget');
+          Homey.ready();
+        });
+    }
+
+    /* ── Data fetch ──────────────────────────────────────────────────── */
+    function fetchAndRender(Homey, id) {
+      return Homey.api('GET', `/departure?deviceId=${encodeURIComponent(id)}`)
+        .then(data => render(data))
+        .catch(err => {
+          console.error('API error:', err);
+          // Keep the last rendered view on transient errors
+        });
+    }
+
+    /* ── Render ──────────────────────────────────────────────────────── */
+    function render(d) {
+      const mins        = typeof d.minutesUntil === 'number' ? d.minutesUntil : 0;
+      const isCancelled = (d.status || '').toLowerCase().startsWith('cancel');
+      const isDelayed   = !isCancelled && (d.delayMinutes || 0) > 0;
+
+      // Countdown colour
+      let cClass, cHtml;
+      if (isCancelled) {
+        cClass = 'c-red'; cHtml = '✕';
+      } else if (mins <= 0) {
+        cClass = 'c-red';    cHtml = 'Now';
+      } else if (mins <= 5) {
+        cClass = 'c-orange'; cHtml = `${mins}<span class="countdown-unit"> min</span>`;
+      } else {
+        cClass = 'c-green';  cHtml = `${mins}<span class="countdown-unit"> min</span>`;
+      }
+
+      // Delay tag
+      let delayHtml = '';
+      if (isCancelled) {
+        delayHtml = `<span class="delay-tag delay-cancelled">Cancelled</span>`;
+      } else if (isDelayed) {
+        delayHtml = `<span class="delay-tag delay-late">+${d.delayMinutes} min</span>`;
+      }
+
+      document.getElementById('root').innerHTML = `
+        <div class="widget">
+          <div class="stop-name">${x(d.stopName || '—')}</div>
+
+          <div class="departure-row">
+            <div class="line-badge">${x(d.line || '?')}</div>
+            <div class="middle">
+              <div class="destination">${x(d.destination || '—')}</div>
+              <div class="time-delay">
+                <span class="dep-time">${x(d.nextDeparture)}</span>
+                ${delayHtml}
+              </div>
+            </div>
+            <div class="countdown-col">
+              <div class="countdown ${cClass}">${cHtml}</div>
+            </div>
+          </div>
+
+          <hr class="sep">
+
+          <div class="footer">
+            <span>${x(d.status || '')}</span>
+            <span>${x(d.lastUpdated || '')}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function showMsg(msg) {
+      document.getElementById('root').innerHTML =
+        `<div class="center-msg">${x(msg)}</div>`;
+    }
+
+    function x(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+  </script>
+</body>
+</html>

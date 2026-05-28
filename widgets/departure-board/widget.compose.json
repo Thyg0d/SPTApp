@@ -1,0 +1,23 @@
+{
+  "name": {
+    "en": "Departure Board"
+  },
+  "height": 204,
+  "settings": [
+    {
+      "id": "board",
+      "label": {
+        "en": "Transport Board"
+      },
+      "type": "devices",
+      "singular": true,
+      "capabilities": ["next_departure_time"]
+    }
+  ],
+  "api": {
+    "getDeparture": {
+      "method": "GET",
+      "path": "/departure"
+    }
+  }
+}
