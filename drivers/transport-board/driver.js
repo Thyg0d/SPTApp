@@ -37,9 +37,16 @@ class TransportBoardDriver extends Homey.Driver {
       );
     }
 
+    // Each returned entry gets a unique device ID so the same stop can be
+    // added more than once (e.g. two boards for the same station monitoring
+    // different directions via destination filter).
+    // The actual stop ID for API calls is stored in data.stopId.
     return savedStops.map(stop => ({
       name: stop.name,
-      data: { id: stop.id },
+      data: {
+        id:     `${stop.id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        stopId: stop.id,
+      },
     }));
   }
 
@@ -89,6 +96,15 @@ class TransportBoardDriver extends Homey.Driver {
       .getActionCard('refresh_now')
       .registerRunListener(async (args) => {
         await args.device.triggerRefresh();
+      });
+
+    // --- Action: set_monitoring ---
+    this.homey.flow
+      .getActionCard('set_monitoring')
+      .registerRunListener(async (args) => {
+        const enable = args.enabled === 'true';
+        await args.device.setCapabilityValue('monitoring_enabled', enable);
+        // The capability listener in device.js will start/stop polling in response
       });
 
     this.log('Flow listeners registered');

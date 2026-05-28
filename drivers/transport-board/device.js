@@ -4,6 +4,11 @@ const Homey = require('homey');
 const TrafiklabError = require('../../lib/TrafiklabError');
 const { formatTime, minutesUntil } = require('../../lib/DataNormalizer');
 
+/** Return the effective ISO time for a BoardItem (realtime if available). */
+function effectiveIso(item) {
+  return (item.realtimeAvailable && item.realtimeTime) ? item.realtimeTime : item.scheduledTime;
+}
+
 /**
  * TransportBoardDevice — represents one monitored stop/station.
  *
@@ -129,7 +134,20 @@ class TransportBoardDevice extends Homey.Device {
     }
 
     // Apply device-level filters (cancelled items are kept — we need them for detection)
-    const filtered = this._applyFilters(items);
+    // Then sort by effective departure time so a bus delayed by hours doesn't
+    // block an on-time bus that leaves in 6 minutes.
+    const tz = this.homey.clock.getTimezone();
+    const filtered = this._applyFilters(items)
+      .filter(item => {
+        // Drop items whose effective departure is more than 2 minutes in the past
+        const mins = minutesUntil(effectiveIso(item), tz);
+        return mins === null || mins > -2;
+      })
+      .sort((a, b) => {
+        const mA = minutesUntil(effectiveIso(a), tz) ?? Infinity;
+        const mB = minutesUntil(effectiveIso(b), tz) ?? Infinity;
+        return mA - mB;
+      });
 
     if (filtered.length === 0) {
       if (items.length > 0) {

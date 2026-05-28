@@ -1,6 +1,6 @@
 {
   "id": "com.thyg0d.swedish-public-transport",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "platforms": ["local"],
@@ -480,7 +480,7 @@
           "en": "Refresh departure data"
         },
         "titleFormatted": {
-          "en": "Refresh departure data on !{{device}}"
+          "en": "Refresh departure data on [[device]]"
         },
         "hint": {
           "en": "Immediately fetch fresh data from Trafiklab, outside the normal polling schedule."
@@ -490,6 +490,34 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=transport-board"
+          }
+        ]
+      },
+      {
+        "id": "set_monitoring",
+        "title": {
+          "en": "Enable or disable monitoring"
+        },
+        "titleFormatted": {
+          "en": "Turn monitoring [[enabled]]"
+        },
+        "hint": {
+          "en": "Pause monitoring to stop polling Trafiklab (saves API quota). Resume to start polling again."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          },
+          {
+            "type": "dropdown",
+            "name": "enabled",
+            "title": { "en": "Monitoring" },
+            "values": [
+              { "id": "true",  "label": { "en": "on"  } },
+              { "id": "false", "label": { "en": "off" } }
+            ]
           }
         ]
       }

@@ -1,5 +1,8 @@
 {
   "1.0.0": {
     "en": "First publish"
+  },
+  "1.1.0": {
+    "en": "Fixed: departures now sorted by effective (realtime) time, so a heavily-delayed bus no longer hides an on-time bus coming in minutes. Fixed: the same stop can now be added as multiple boards (useful for tracking different directions at one station). New: flow action card to enable or disable monitoring from a flow."
   }
 }
