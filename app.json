@@ -59,8 +59,7 @@
           "id": "board",
           "label": { "en": "Transport Board" },
           "type": "devices",
-          "singular": true,
-          "capabilities": ["next_departure_time"]
+          "singular": true
         }
       ],
       "api": {

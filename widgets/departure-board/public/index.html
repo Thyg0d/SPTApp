@@ -147,9 +147,11 @@
       let deviceId = null;
 
       Homey.getSettings()
-        .then(() => {
-          const ids = Homey.getDeviceIds();
-          deviceId = Array.isArray(ids) && ids.length > 0 ? ids[0] : null;
+        .then(settings => {
+          // settings.board is the value of our 'board' devices-type setting.
+          // For singular=true it's a single ID string; guard for array just in case.
+          const raw = settings && settings.board;
+          deviceId = Array.isArray(raw) ? raw[0] : (raw || null);
 
           if (!deviceId) {
             showMsg('Choose a Transport Board in widget settings');

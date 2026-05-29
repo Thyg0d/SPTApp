@@ -11,11 +11,13 @@ module.exports = {
     const { deviceId } = query;
     if (!deviceId) throw new Error('deviceId required');
 
-    // Find the device among all Transport Board instances
+    // Find the device — match on Homey's internal ID or our custom getData().id
     let device;
     try {
       const driver = homey.drivers.getDriver('transport-board');
-      device = driver.getDevices().find(d => d.id === deviceId);
+      device = driver.getDevices().find(d =>
+        d.id === deviceId || (d.getData && d.getData().id === deviceId),
+      );
     } catch (err) {
       throw new Error('transport-board driver not available');
     }
