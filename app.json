@@ -1,6 +1,6 @@
 {
   "id": "com.thyg0d.swedish-public-transport",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "compatibility": ">=12.3.0",
   "sdk": 3,
   "platforms": [
@@ -48,6 +48,29 @@
   "homepage": "https://github.com/Thyg0d/SPTApp",
   "support": "https://github.com/Thyg0d/SPTApp/issues",
   "brandColor": "#0070C0",
+
+  "widgets": {
+    "departure-board": {
+      "id": "departure-board",
+      "name": { "en": "Departure Board" },
+      "height": 204,
+      "settings": [
+        {
+          "id": "board",
+          "label": { "en": "Transport Board" },
+          "type": "devices",
+          "singular": true,
+          "capabilities": ["next_departure_time"]
+        }
+      ],
+      "api": {
+        "getDeparture": {
+          "method": "GET",
+          "path": "/departure"
+        }
+      }
+    }
+  },
   "capabilities": {
     "next_departure_time": {
       "type": "string",
