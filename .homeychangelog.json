@@ -10,5 +10,14 @@
   },
   "1.1.1": {
     "en": "Bug fixes based on community feedback. The board now always shows the departure that actually leaves next — a bus or train with a large reported delay no longer pushes a normal on-time service out of view. You can also now add the same stop more than once, which is handy for stations where you want to track different lines or directions on separate boards. A new flow action lets you pause and resume monitoring directly from a flow."
+  },
+  "1.2.1": {
+    "en": "Updated app with Widget functionality. Might be a bit unstable"
+  },
+  "1.3.0": {
+    "en": "Before you run it, a quick pre-flight from our reference:"
+  },
+  "1.3.2": {
+    "en": "Fixes \"ghost\" departures that could keep the board stuck on a long-delayed bus (e.g. +77 min or +1179 min late) even after the next scheduled service was due. Departures delayed beyond a configurable threshold (default 60 min) are now hidden so the board advances to the next real one. Tune or disable via the new \"Hide departures delayed more than\" device setting."
   }
 }

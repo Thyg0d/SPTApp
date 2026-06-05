@@ -8,5 +8,8 @@
   },
   "devDependencies": {
     "sharp": "^0.34.5"
+  },
+  "dependencies": {
+    "homey-api": "^3.19.0"
   }
 }

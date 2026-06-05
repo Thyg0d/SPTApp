@@ -2,21 +2,16 @@
   "name": {
     "en": "Departure Board"
   },
-  "height": 204,
-  "settings": [
-    {
-      "id": "board",
-      "label": {
-        "en": "Transport Board"
-      },
-      "type": "devices",
-      "singular": true
-    }
-  ],
+  "height": 120,
+  "devices": {
+    "type": "app",
+    "singular": false
+  },
+  "settings": [],
   "api": {
-    "getDeparture": {
+    "getDepartures": {
       "method": "GET",
-      "path": "/departure"
+      "path": "/departures"
     }
   }
 }

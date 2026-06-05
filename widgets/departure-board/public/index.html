@@ -12,17 +12,25 @@
       font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
       color: var(--homey-text-color);
       background: transparent;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
+      overflow-y: auto;
     }
 
     .widget {
-      padding: 16px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      flex: 1;
+      gap: 12px;
+    }
+
+    /* One block per selected board; subtle divider between boards. */
+    .board {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .board + .board {
+      border-top: var(--homey-line, 1px solid rgba(128,128,128,0.2));
+      padding-top: 12px;
     }
 
     /* ── Stop name ───────────────────────────────────────────────────── */
@@ -127,14 +135,14 @@
 
     /* ── Empty / error states ────────────────────────────────────────── */
     .center-msg {
-      flex: 1;
+      min-height: 88px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: var(--homey-font-size-small, 14px);
       color: var(--homey-text-color-light);
       text-align: center;
-      padding: 0 16px;
+      padding: 16px;
     }
   </style>
 </head>
@@ -142,52 +150,76 @@
   <div id="root"><div class="center-msg">Loading…</div></div>
 
   <script>
+    /* Cap the widget height; beyond this the board list scrolls. */
+    var MAX_HEIGHT = 460;
+    var homeyRef = null;
+
     /* ── Entry point ─────────────────────────────────────────────────── */
     function onHomeyReady(Homey) {
-      let deviceId = null;
+      homeyRef = Homey;
 
-      Homey.getSettings()
-        .then(settings => {
-          // settings.board is the value of our 'board' devices-type setting.
-          // For singular=true it's a single ID string; guard for array just in case.
-          const raw = settings && settings.board;
-          deviceId = Array.isArray(raw) ? raw[0] : (raw || null);
+      // Device(s) picked in the widget's top-level `devices` setting are
+      // returned synchronously as an array of Homey manager device IDs.
+      var ids = Homey.getDeviceIds() || [];
 
-          if (!deviceId) {
-            showMsg('Choose a Transport Board in widget settings');
-            return Homey.ready();
-          }
+      if (!ids.length) {
+        showMsg('Choose one or more Transport Boards in widget settings');
+        Homey.ready({ height: 96 });
+        return;
+      }
 
-          return fetchAndRender(Homey, deviceId).then(() => {
-            Homey.ready();
-            setInterval(() => fetchAndRender(Homey, deviceId), 30000);
-          });
+      // First load: surface any error so we never sit silently on "Loading…".
+      fetchAndRender(ids, true)
+        .then(() => {
+          Homey.ready({ height: currentHeight() });
+          // Subsequent polls keep the last good view on transient errors.
+          setInterval(() => fetchAndRender(ids, false), 30000);
         })
         .catch(err => {
           console.error(err);
           showMsg('Could not load widget');
-          Homey.ready();
+          Homey.ready({ height: 96 });
         });
     }
 
     /* ── Data fetch ──────────────────────────────────────────────────── */
-    function fetchAndRender(Homey, id) {
-      return Homey.api('GET', `/departure?deviceId=${encodeURIComponent(id)}`)
-        .then(data => render(data))
+    function fetchAndRender(ids, showErrors) {
+      var qs = ids.map(encodeURIComponent).join(',');
+      return homeyRef.api('GET', `/departures?deviceIds=${qs}`)
+        .then(boards => { render(boards); fit(); })
         .catch(err => {
           console.error('API error:', err);
-          // Keep the last rendered view on transient errors
+          if (showErrors) {
+            var msg = (err && (err.message || err.error)) || String(err);
+            showMsg(msg);
+            fit();
+          }
+          // On later polls, keep the last rendered view on transient errors.
         });
     }
 
     /* ── Render ──────────────────────────────────────────────────────── */
-    function render(d) {
-      const mins        = typeof d.minutesUntil === 'number' ? d.minutesUntil : 0;
-      const isCancelled = (d.status || '').toLowerCase().startsWith('cancel');
-      const isDelayed   = !isCancelled && (d.delayMinutes || 0) > 0;
+    function render(boards) {
+      if (!Array.isArray(boards) || !boards.length) {
+        showMsg('No boards to show');
+        return;
+      }
+      var html = boards.map(boardHtml).join('');
+      document.getElementById('root').innerHTML = `<div class="widget">${html}</div>`;
+    }
+
+    function boardHtml(d) {
+      if (d && d.error) {
+        return `<div class="board"><div class="stop-name">${x(d.stopName || 'Board unavailable')}</div>
+                <div class="dep-time">No data available</div></div>`;
+      }
+
+      var mins        = typeof d.minutesUntil === 'number' ? d.minutesUntil : 0;
+      var isCancelled = (d.status || '').toLowerCase().startsWith('cancel');
+      var isDelayed   = !isCancelled && (d.delayMinutes || 0) > 0;
 
       // Countdown colour
-      let cClass, cHtml;
+      var cClass, cHtml;
       if (isCancelled) {
         cClass = 'c-red'; cHtml = '✕';
       } else if (mins <= 0) {
@@ -199,17 +231,16 @@
       }
 
       // Delay tag
-      let delayHtml = '';
+      var delayHtml = '';
       if (isCancelled) {
         delayHtml = `<span class="delay-tag delay-cancelled">Cancelled</span>`;
       } else if (isDelayed) {
         delayHtml = `<span class="delay-tag delay-late">+${d.delayMinutes} min</span>`;
       }
 
-      document.getElementById('root').innerHTML = `
-        <div class="widget">
+      return `
+        <div class="board">
           <div class="stop-name">${x(d.stopName || '—')}</div>
-
           <div class="departure-row">
             <div class="line-badge">${x(d.line || '?')}</div>
             <div class="middle">
@@ -223,15 +254,21 @@
               <div class="countdown ${cClass}">${cHtml}</div>
             </div>
           </div>
-
-          <hr class="sep">
-
           <div class="footer">
             <span>${x(d.status || '')}</span>
             <span>${x(d.lastUpdated || '')}</span>
           </div>
         </div>
       `;
+    }
+
+    /* Size the widget to its content, capped at MAX_HEIGHT (then it scrolls). */
+    function currentHeight() {
+      var h = Math.ceil(document.getElementById('root').scrollHeight) + 2;
+      return Math.min(h, MAX_HEIGHT);
+    }
+    function fit() {
+      if (homeyRef && homeyRef.setHeight) homeyRef.setHeight(currentHeight());
     }
 
     function showMsg(msg) {

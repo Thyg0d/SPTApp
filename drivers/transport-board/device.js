@@ -137,8 +137,16 @@ class TransportBoardDevice extends Homey.Device {
     // Then sort by effective departure time so a bus delayed by hours doesn't
     // block an on-time bus that leaves in 6 minutes.
     const tz = this.homey.clock.getTimezone();
+    const maxDelay = Number(this.getSetting('maxDelayMinutes') ?? 60);
     const filtered = this._applyFilters(items)
       .filter(item => {
+        // Drop "ghost" departures: Trafiklab sometimes keeps a long-missed
+        // service in the feed with realtime drifting forward and a huge delay,
+        // even after the next scheduled bus has effectively replaced it.
+        // Cancelled items are kept so the cancellation trigger still fires.
+        if (maxDelay > 0 && !item.isCancelled && item.delayMinutes > maxDelay) {
+          return false;
+        }
         // Drop items whose effective departure is more than 2 minutes in the past
         const mins = minutesUntil(effectiveIso(item), tz);
         return mins === null || mins > -2;
