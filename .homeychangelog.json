@@ -22,5 +22,8 @@
   },
   "1.3.3": {
     "en": "Fixes a blank app icon in the Homey mobile app. The icon is now a true vector and renders correctly across all Homey clients."
+  },
+  "1.3.4": {
+    "en": "And now with an icon that doesn't look like .... "
   }
 }
