@@ -107,6 +107,18 @@ class TransportBoardDriver extends Homey.Driver {
         // The capability listener in device.js will start/stop polling in response
       });
 
+    // --- Action: get_departure ---
+    // Returns a specific upcoming departure's details as flow tokens. The object
+    // returned by the run listener populates the card's output tags.
+    this.homey.flow
+      .getActionCard('get_departure')
+      .registerRunListener(async (args) => {
+        return args.device.getDeparture({
+          line: args.line,
+          scheduledTime: args.time,
+        });
+      });
+
     this.log('Flow listeners registered');
   }
 }

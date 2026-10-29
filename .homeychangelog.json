@@ -28,5 +28,8 @@
   },
   "1.4.0": {
     "en": "Updated dashboard functions and the possibility to see several departures"
+  },
+  "1.5.0": {
+    "en": "New way of targeting a certain departure to use for automations. Like Trains i 3 minutes late, read a message on my speaker announcing the delay and by how much. "
   }
 }

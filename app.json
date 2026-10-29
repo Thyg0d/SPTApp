@@ -1,6 +1,6 @@
 {
   "id": "com.thyg0d.swedish-public-transport",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "compatibility": ">=12.3.0",
   "sdk": 3,
   "platforms": [
@@ -1373,6 +1373,136 @@
                 }
               }
             ]
+          }
+        ]
+      },
+      {
+        "id": "get_departure",
+        "title": {
+          "en": "Get a specific departure"
+        },
+        "titleFormatted": {
+          "en": "Get the [[line]] departure at [[time]]"
+        },
+        "hint": {
+          "en": "Looks up a specific upcoming departure by line and scheduled time, and returns its details (delay, cancellation, new time, platform) as tags. Reads the latest polled data — no extra API calls. 'Found' is false when that departure isn't in the current board (already left, or outside the Trafiklab window)."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=transport-board"
+          },
+          {
+            "type": "text",
+            "name": "line",
+            "title": {
+              "en": "Line"
+            },
+            "placeholder": {
+              "en": "e.g. 43"
+            }
+          },
+          {
+            "type": "time",
+            "name": "time",
+            "title": {
+              "en": "Scheduled time"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "found",
+            "type": "boolean",
+            "title": {
+              "en": "Found"
+            },
+            "example": true
+          },
+          {
+            "name": "line_name",
+            "type": "string",
+            "title": {
+              "en": "Line"
+            },
+            "example": {
+              "en": "43"
+            }
+          },
+          {
+            "name": "destination",
+            "type": "string",
+            "title": {
+              "en": "Destination"
+            },
+            "example": {
+              "en": "Stockholm City"
+            }
+          },
+          {
+            "name": "scheduled_time",
+            "type": "string",
+            "title": {
+              "en": "Scheduled time"
+            },
+            "example": {
+              "en": "07:54"
+            }
+          },
+          {
+            "name": "departure_time",
+            "type": "string",
+            "title": {
+              "en": "Departure time"
+            },
+            "example": {
+              "en": "07:57"
+            }
+          },
+          {
+            "name": "delay_minutes",
+            "type": "number",
+            "title": {
+              "en": "Delay (minutes)"
+            },
+            "example": 3
+          },
+          {
+            "name": "delay_text",
+            "type": "string",
+            "title": {
+              "en": "Delay text"
+            },
+            "example": {
+              "en": "+3 min late"
+            }
+          },
+          {
+            "name": "is_cancelled",
+            "type": "boolean",
+            "title": {
+              "en": "Cancelled"
+            },
+            "example": false
+          },
+          {
+            "name": "minutes_until",
+            "type": "number",
+            "title": {
+              "en": "Minutes until"
+            },
+            "example": 44
+          },
+          {
+            "name": "platform",
+            "type": "string",
+            "title": {
+              "en": "Platform"
+            },
+            "example": {
+              "en": "2"
+            }
           }
         ]
       }

@@ -39,6 +39,10 @@ class TransportBoardDevice extends Homey.Device {
     this._prevDelayMinutes = null;
     this._prevCancelledKey = null;
 
+    // Latest filtered/sorted board (incl. cancelled) from the last poll.
+    // null = never polled yet; read by the get_departure action card.
+    this._lastBoard = null;
+
     // Register capability listener so user can toggle monitoring from the UI
     this.registerCapabilityListener('monitoring_enabled', async value => {
       this.log(`Monitoring toggled: ${value}`);
@@ -78,6 +82,79 @@ class TransportBoardDevice extends Homey.Device {
   /** Force an immediate data refresh (used by the refresh_now action card). */
   async triggerRefresh() {
     await this._fetchAndUpdate();
+  }
+
+  /**
+   * Look up a specific upcoming departure and return its details as a token
+   * object for the get_departure action card. Reads the last polled board —
+   * no extra Trafiklab call (polls once first only if we've never fetched).
+   *
+   * Matching:
+   *  - scheduledTime given ("HH:MM") → that specific scheduled departure
+   *    (cancelled included, so a cancellation can be reported);
+   *  - otherwise → the next upcoming departure (cancelled excluded).
+   *  - line, when given, is a case-insensitive substring filter in both cases.
+   *
+   * @param {{ line?: string, scheduledTime?: string }} opts
+   * @returns {Promise<object>} token values (found=false if no match)
+   */
+  async getDeparture({ line, scheduledTime } = {}) {
+    // Right after an app restart we may not have polled yet — do it once.
+    if (this._lastBoard === null) {
+      await this._fetchAndUpdate().catch(() => {});
+    }
+    const board = Array.isArray(this._lastBoard) ? this._lastBoard : [];
+
+    const wantLine = (line || '').trim().toUpperCase();
+    const wantTime = this._normalizeHHMM(scheduledTime);
+
+    const matchesLine = item => {
+      if (!wantLine) return true;
+      const l = (item.lineName || item.lineDesignation || '').toUpperCase();
+      return l.includes(wantLine);
+    };
+
+    let match = null;
+    if (wantTime) {
+      match = board.find(item => matchesLine(item)
+        && this._formatTime(item.scheduledTime) === wantTime);
+    } else {
+      match = board.find(item => !item.isCancelled && matchesLine(item));
+    }
+
+    const empty = {
+      found: false, line_name: '', destination: '', scheduled_time: '',
+      departure_time: '', delay_minutes: 0, delay_text: '', is_cancelled: false,
+      minutes_until: 0, platform: '',
+    };
+    if (!match) return empty;
+
+    const boardType = this.getSetting('boardType') || 'departures';
+    const destination = boardType === 'arrivals'
+      ? (match.origin || match.destination || '')
+      : (match.destination || '');
+    const effIso = match.realtimeAvailable ? match.realtimeTime : match.scheduledTime;
+    const mins = minutesUntil(effIso, this.homey.clock.getTimezone());
+
+    return {
+      found: true,
+      line_name:      match.lineName || match.lineDesignation || '',
+      destination,
+      scheduled_time: this._formatTime(match.scheduledTime),
+      departure_time: this._formatTime(effIso),
+      delay_minutes:  match.delayMinutes || 0,
+      delay_text:     match.delayText || 'On time',
+      is_cancelled:   Boolean(match.isCancelled),
+      minutes_until:  mins !== null ? mins : 0,
+      platform:       match.realtimePlatform || match.platform || '',
+    };
+  }
+
+  /** Normalise a "H:MM" / "HH:MM" string to zero-padded "HH:MM" (or ''). */
+  _normalizeHHMM(s) {
+    if (!s) return '';
+    const m = String(s).match(/(\d{1,2}):(\d{2})/);
+    return m ? `${String(m[1]).padStart(2, '0')}:${m[2]}` : '';
   }
 
   // ---------------------------------------------------------------------------
@@ -156,6 +233,10 @@ class TransportBoardDevice extends Homey.Device {
         const mB = minutesUntil(effectiveIso(b), tz) ?? Infinity;
         return mA - mB;
       });
+
+    // Keep the latest board (including cancelled items) for the get_departure
+    // action card, so flows can look up a specific departure without a new call.
+    this._lastBoard = filtered;
 
     if (filtered.length === 0) {
       if (items.length > 0) {
