@@ -45,7 +45,7 @@
       text-overflow: ellipsis;
     }
 
-    /* ── Main departure row ──────────────────────────────────────────── */
+    /* ── Primary (first) departure row ───────────────────────────────── */
     .departure-row {
       display: flex;
       align-items: center;
@@ -102,7 +102,7 @@
     .delay-late      { color: var(--homey-text-color-orange); background: rgba(255,165,0,0.15); }
     .delay-cancelled { color: var(--homey-text-color-red);    background: rgba(255,0,0,0.12);   }
 
-    /* ── Countdown ───────────────────────────────────────────────────── */
+    /* ── Countdown (primary) ─────────────────────────────────────────── */
     .countdown-col { flex-shrink: 0; text-align: right; }
 
     .countdown {
@@ -119,18 +119,61 @@
     .c-orange { color: var(--homey-text-color-orange); }
     .c-red    { color: var(--homey-text-color-red);    }
 
-    /* ── Footer ──────────────────────────────────────────────────────── */
-    hr.sep {
-      border: none;
-      border-top: var(--homey-line, 1px solid rgba(128,128,128,0.2));
-      margin: 0;
+    /* ── Secondary (following) departure rows ────────────────────────── */
+    .sub-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .sub-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sub-badge {
+      min-width: 30px;
+      height: 24px;
+      border-radius: var(--homey-border-radius-small, 6px);
+      background: rgba(128,128,128,0.18);
+      color: var(--homey-text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      padding: 0 5px;
+      white-space: nowrap;
+    }
+    .sub-dest {
+      flex: 1;
+      min-width: 0;
+      font-size: var(--homey-font-size-small, 14px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sub-time {
+      flex-shrink: 0;
+      font-size: 12px;
+      color: var(--homey-text-color-light);
+    }
+    .sub-count {
+      flex-shrink: 0;
+      min-width: 52px;
+      text-align: right;
+      font-size: var(--homey-font-size-small, 14px);
+      font-weight: 600;
     }
 
+    /* ── Footer ──────────────────────────────────────────────────────── */
     .footer {
       display: flex;
       justify-content: space-between;
       font-size: 11px;
       color: var(--homey-text-color-light);
+      margin-top: 2px;
     }
 
     /* ── Empty / error states ────────────────────────────────────────── */
@@ -151,12 +194,24 @@
 
   <script>
     /* Cap the widget height; beyond this the board list scrolls. */
-    var MAX_HEIGHT = 460;
-    var homeyRef = null;
+    var MAX_HEIGHT = 600;
+    /* How many departures to list per board (overridden by widget settings). */
+    var DEFAULT_COUNT = 5;
+
+    var homeyRef   = null;
+    var lastBoards = null;   // last good data, re-rendered by the live ticker
+    var showCount  = DEFAULT_COUNT;
 
     /* ── Entry point ─────────────────────────────────────────────────── */
     function onHomeyReady(Homey) {
       homeyRef = Homey;
+
+      // Widget setting: number of departures to show (clamped 1–10).
+      try {
+        var s = (Homey.getSettings && Homey.getSettings()) || {};
+        var n = parseInt(s.departureCount, 10);
+        if (!isNaN(n)) showCount = Math.min(Math.max(n, 1), 10);
+      } catch (e) { /* keep default */ }
 
       // Device(s) picked in the widget's top-level `devices` setting are
       // returned synchronously as an array of Homey manager device IDs.
@@ -172,8 +227,11 @@
       fetchAndRender(ids, true)
         .then(() => {
           Homey.ready({ height: currentHeight() });
-          // Subsequent polls keep the last good view on transient errors.
+          // Refetch fresh capability data from the device every 30s …
           setInterval(() => fetchAndRender(ids, false), 30000);
+          // … and re-render every 15s so the countdown ticks down live,
+          // independent of the device's (slower) Trafiklab poll.
+          setInterval(tick, 15000);
         })
         .catch(err => {
           console.error(err);
@@ -186,7 +244,7 @@
     function fetchAndRender(ids, showErrors) {
       var qs = ids.map(encodeURIComponent).join(',');
       return homeyRef.api('GET', `/departures?deviceIds=${qs}`)
-        .then(boards => { render(boards); fit(); })
+        .then(boards => { lastBoards = boards; render(boards); fit(); })
         .catch(err => {
           console.error('API error:', err);
           if (showErrors) {
@@ -196,6 +254,11 @@
           }
           // On later polls, keep the last rendered view on transient errors.
         });
+    }
+
+    /* Re-render the last good data so countdowns advance between fetches. */
+    function tick() {
+      if (lastBoards) { render(lastBoards); fit(); }
     }
 
     /* ── Render ──────────────────────────────────────────────────────── */
@@ -208,56 +271,103 @@
       document.getElementById('root').innerHTML = `<div class="widget">${html}</div>`;
     }
 
+    /* Minutes until a row's departure.
+       Prefer the absolute timestamp (ts) so it ticks down live; fall back to
+       the server-provided minutes for the capability-only fallback row. */
+    function rowMinutes(row) {
+      if (typeof row.ts === 'number') {
+        return Math.round((row.ts - Date.now()) / 60000);
+      }
+      if (typeof row.minutes === 'number') return row.minutes;
+      return null;
+    }
+
+    /* Colour + text for a countdown value. */
+    function countdownParts(mins) {
+      if (mins === null)      return { cls: 'c-green',  html: '—' };
+      if (mins <= 0)          return { cls: 'c-red',    html: 'Now' };
+      if (mins <= 5)          return { cls: 'c-orange', html: mins };
+      return { cls: 'c-green', html: mins };
+    }
+
     function boardHtml(d) {
       if (d && d.error) {
         return `<div class="board"><div class="stop-name">${x(d.stopName || 'Board unavailable')}</div>
                 <div class="dep-time">No data available</div></div>`;
       }
 
-      var mins        = typeof d.minutesUntil === 'number' ? d.minutesUntil : 0;
-      var isCancelled = (d.status || '').toLowerCase().startsWith('cancel');
-      var isDelayed   = !isCancelled && (d.delayMinutes || 0) > 0;
+      var list = Array.isArray(d.upcoming) ? d.upcoming.slice(0, showCount) : [];
 
-      // Countdown colour
-      var cClass, cHtml;
-      if (isCancelled) {
-        cClass = 'c-red'; cHtml = '✕';
-      } else if (mins <= 0) {
-        cClass = 'c-red';    cHtml = 'Now';
-      } else if (mins <= 5) {
-        cClass = 'c-orange'; cHtml = `${mins}<span class="countdown-unit"> min</span>`;
-      } else {
-        cClass = 'c-green';  cHtml = `${mins}<span class="countdown-unit"> min</span>`;
+      if (!list.length) {
+        return `
+          <div class="board">
+            <div class="stop-name">${x(d.stopName || '—')}</div>
+            <div class="dep-time">${x(d.status || 'No departures')}</div>
+            <div class="footer"><span></span><span>${x(d.lastUpdated || '')}</span></div>
+          </div>`;
       }
 
-      // Delay tag
-      var delayHtml = '';
-      if (isCancelled) {
-        delayHtml = `<span class="delay-tag delay-cancelled">Cancelled</span>`;
-      } else if (isDelayed) {
-        delayHtml = `<span class="delay-tag delay-late">+${d.delayMinutes} min</span>`;
-      }
+      var primary = primaryRow(list[0]);
+      var rest    = list.slice(1).map(subRow).join('');
+      var subHtml = rest ? `<div class="sub-list">${rest}</div>` : '';
 
       return `
         <div class="board">
           <div class="stop-name">${x(d.stopName || '—')}</div>
-          <div class="departure-row">
-            <div class="line-badge">${x(d.line || '?')}</div>
-            <div class="middle">
-              <div class="destination">${x(d.destination || '—')}</div>
-              <div class="time-delay">
-                <span class="dep-time">${x(d.nextDeparture)}</span>
-                ${delayHtml}
-              </div>
-            </div>
-            <div class="countdown-col">
-              <div class="countdown ${cClass}">${cHtml}</div>
-            </div>
-          </div>
+          ${primary}
+          ${subHtml}
           <div class="footer">
             <span>${x(d.status || '')}</span>
             <span>${x(d.lastUpdated || '')}</span>
           </div>
+        </div>
+      `;
+    }
+
+    /* First departure — large countdown, matches the original single view. */
+    function primaryRow(r) {
+      var mins      = rowMinutes(r);
+      var isDelayed = (r.delay || 0) > 0;
+      var cp        = countdownParts(mins);
+      var cHtml     = (cp.html === 'Now' || cp.html === '—')
+        ? cp.html
+        : `${cp.html}<span class="countdown-unit"> min</span>`;
+
+      var delayHtml = isDelayed
+        ? `<span class="delay-tag delay-late">+${r.delay} min</span>` : '';
+
+      return `
+        <div class="departure-row">
+          <div class="line-badge">${x(r.line || '?')}</div>
+          <div class="middle">
+            <div class="destination">${x(r.destination || '—')}</div>
+            <div class="time-delay">
+              <span class="dep-time">${x(r.time || '')}</span>
+              ${delayHtml}
+            </div>
+          </div>
+          <div class="countdown-col">
+            <div class="countdown ${cp.cls}">${cHtml}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* Following departures — compact single-line rows. */
+    function subRow(r) {
+      var mins      = rowMinutes(r);
+      var cp        = countdownParts(mins);
+      var countTxt  = (cp.html === 'Now' || cp.html === '—') ? cp.html : `${cp.html} min`;
+      var isDelayed = (r.delay || 0) > 0;
+      var delayHtml = isDelayed
+        ? ` <span class="delay-tag delay-late">+${r.delay}</span>` : '';
+
+      return `
+        <div class="sub-row">
+          <div class="sub-badge">${x(r.line || '?')}</div>
+          <div class="sub-dest">${x(r.destination || '—')}${delayHtml}</div>
+          <div class="sub-time">${x(r.time || '')}</div>
+          <div class="sub-count ${cp.cls}">${countTxt}</div>
         </div>
       `;
     }

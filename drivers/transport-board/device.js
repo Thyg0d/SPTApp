@@ -2,7 +2,7 @@
 
 const Homey = require('homey');
 const TrafiklabError = require('../../lib/TrafiklabError');
-const { formatTime, minutesUntil } = require('../../lib/DataNormalizer');
+const { formatTime, minutesUntil, toEpochMs } = require('../../lib/DataNormalizer');
 
 /** Return the effective ISO time for a BoardItem (realtime if available). */
 function effectiveIso(item) {
@@ -216,6 +216,27 @@ class TransportBoardDevice extends Homey.Device {
       this.setCapabilityValue('last_updated',             this._nowString()).catch(() => {}),
       this.setCapabilityValue('api_status',               'OK').catch(() => {}),
     ]);
+
+    // --- Build the multi-departure list for the widget (next up to 10) ---
+    // Reuses the same filtered / sorted / ghost-cleaned list the single-departure
+    // display is taken from, so the widget needs no extra Trafiklab calls and
+    // stays consistent with the device capabilities. Each row carries an
+    // absolute timestamp (ts) so the widget can tick the countdown down live
+    // between the device's (slower) polls.
+    const upcoming = displayItems.slice(0, 10).map(item => {
+      const itemTime = item.realtimeAvailable ? item.realtimeTime : item.scheduledTime;
+      const itemDest = boardType === 'arrivals'
+        ? (item.origin || item.destination || '')
+        : (item.destination || '');
+      return {
+        line:        item.lineName || item.lineDesignation || '',
+        destination: itemDest,
+        time:        this._formatTime(itemTime),
+        ts:          toEpochMs(itemTime, tz),
+        delay:       item.delayMinutes,
+      };
+    });
+    await this.setStoreValue('upcoming', upcoming).catch(() => {});
 
     // --- Fire departure_updated (every successful poll) ---
     await this._fireTrigger('departure_updated', next, mins, boardType);
@@ -443,6 +464,8 @@ class TransportBoardDevice extends Homey.Device {
 
   async _handleNoData(reason) {
     await this.setAvailable();
+    // Clear the widget list so it doesn't keep showing stale departures.
+    await this.setStoreValue('upcoming', []).catch(() => {});
     await Promise.all([
       this.setCapabilityValue('next_departure_time',     'No departures').catch(() => {}),
       this.setCapabilityValue('departure_line',          '').catch(() => {}),

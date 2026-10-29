@@ -2,12 +2,27 @@
   "name": {
     "en": "Departure Board"
   },
-  "height": 120,
+  "height": 260,
   "devices": {
     "type": "app",
     "singular": false
   },
-  "settings": [],
+  "settings": [
+    {
+      "id": "departureCount",
+      "type": "number",
+      "label": {
+        "en": "Number of departures to show"
+      },
+      "hint": {
+        "en": "How many upcoming departures to list per board (1–10)."
+      },
+      "value": 5,
+      "min": 1,
+      "max": 10,
+      "step": 1
+    }
+  ],
   "api": {
     "getDepartures": {
       "method": "GET",

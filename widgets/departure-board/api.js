@@ -30,18 +30,41 @@ function getApi(homey) {
 
 function snapshot(device) {
   const caps = device.capabilitiesObj || {};
+  const store = device.store || {};
   const val = (id, fallback) =>
     (caps[id] && caps[id].value != null ? caps[id].value : fallback);
 
+  // Preferred source: the multi-departure list the device writes each poll.
+  // Rows carry { line, destination, time, ts, delay }; ts is an absolute UTC
+  // timestamp the widget uses to tick the countdown down live.
+  let upcoming = Array.isArray(store.upcoming) ? store.upcoming : [];
+
+  // Fallback for devices that haven't written the list yet (e.g. just after an
+  // app update, before their first poll): synthesise a single row from the live
+  // capabilities so the widget still shows the next departure. ts is null here,
+  // so the widget shows the server-provided minutes/time without live ticking.
+  if (!upcoming.length) {
+    const line = val('departure_line', '');
+    const time = val('next_departure_time', '');
+    const hasDeparture = (line && line !== '—')
+      || (time && time !== '—' && time !== 'No departures');
+    if (hasDeparture) {
+      upcoming = [{
+        line,
+        destination: val('departure_destination', ''),
+        time,
+        ts: null,
+        minutes: val('minutes_until_departure', null),
+        delay: val('delay_minutes', 0),
+      }];
+    }
+  }
+
   return {
-    stopName:      (device.store && device.store.stopName) || device.name || '—',
-    line:          val('departure_line', ''),
-    destination:   val('departure_destination', ''),
-    nextDeparture: val('next_departure_time', '—'),
-    minutesUntil:  val('minutes_until_departure', 0),
-    delayMinutes:  val('delay_minutes', 0),
-    status:        val('api_status', ''),
-    lastUpdated:   val('last_updated', ''),
+    stopName:    store.stopName || device.name || '—',
+    upcoming,
+    status:      val('api_status', ''),
+    lastUpdated: val('last_updated', ''),
   };
 }
 

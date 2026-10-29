@@ -1,4 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100" width="400" height="200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!--
+    Swedish Public Transport — app icon.
+    Bus + train front-view pair (the approved artwork), re-fitted into a
+    SQUARE viewBox so Homey's circular icon frame no longer squishes it.
+    The original 200x100 artwork is preserved verbatim below and centred
+    via the outer transform: translate(2.5,23.75) scale(0.5).
+    Masks cut out windows/wheels so brandColor (#0070C0) shows through.
+  -->
   <defs>
     <mask id="busMask">
       <rect x="0" y="0" width="100" height="100" fill="white" />
@@ -7,7 +15,7 @@
       <circle cx="28" cy="70" r="6" fill="black" />
       <circle cx="62" cy="70" r="6" fill="black" />
     </mask>
-    
+
     <mask id="trainMask">
       <rect x="100" y="0" width="100" height="100" fill="white" />
       <rect x="124" y="35" width="18" height="22" rx="3" fill="black"/>
@@ -17,13 +25,15 @@
     </mask>
   </defs>
 
-  <g fill="#FFFFFF">
-    <path mask="url(#busMask)" d="M 25 15 C 15 15 12 25 12 40 L 12 75 C 12 82 16 85 20 85 L 20 92 C 20 95 26 95 26 92 L 26 85 L 64 85 L 64 92 C 64 95 70 95 70 92 L 70 85 C 74 85 78 82 78 75 L 78 40 C 78 25 75 15 65 15 Z" />
-  </g>
+  <g transform="translate(2.5,23.75) scale(0.5)">
+    <g fill="#FFFFFF">
+      <path mask="url(#busMask)" d="M 25 15 C 15 15 12 25 12 40 L 12 75 C 12 82 16 85 20 85 L 20 92 C 20 95 26 95 26 92 L 26 85 L 64 85 L 64 92 C 64 95 70 95 70 92 L 70 85 C 74 85 78 82 78 75 L 78 40 C 78 25 75 15 65 15 Z" />
+    </g>
 
-  <g fill="#FFFFFF">
-    <rect x="131" y="10" width="28" height="6" rx="3" />
-    <path mask="url(#trainMask)" d="M 125 20 C 130 18 160 18 165 20 C 176 24 178 35 178 45 L 178 75 C 178 82 174 85 170 85 L 120 85 C 116 85 112 82 112 75 L 112 45 C 112 35 114 24 125 20 Z" />
-    <path d="M 122 89 L 168 89 C 168 89 171 90 176 95 L 168 95 L 164 92 L 126 92 L 122 95 L 114 95 C 119 90 122 89 122 89 Z" />
+    <g fill="#FFFFFF">
+      <rect x="131" y="10" width="28" height="6" rx="3" />
+      <path mask="url(#trainMask)" d="M 125 20 C 130 18 160 18 165 20 C 176 24 178 35 178 45 L 178 75 C 178 82 174 85 170 85 L 120 85 C 116 85 112 82 112 75 L 112 45 C 112 35 114 24 125 20 Z" />
+      <path d="M 122 89 L 168 89 C 168 89 171 90 176 95 L 168 95 L 164 92 L 126 92 L 122 95 L 114 95 C 119 90 122 89 122 89 Z" />
+    </g>
   </g>
 </svg>
